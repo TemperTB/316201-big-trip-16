@@ -1,10 +1,11 @@
 import { renderTemplate, RenderPosition } from './render.js';
-import { createTripTabsTemplate } from './view/trip-tabs.js';
-import { createTripFiltersTemplate } from './view/trip-filters.js';
-import { createTripSortTemplate } from './view/trip-sort.js';
-import { createEventAddTemplate } from './view/event-add';
-import { createEventEditTemplate } from './view/event-edit';
-import { createEventTemplate } from './view/event';
+import { generatePoint } from './mock/point.js';
+import { createTripTabsTemplate } from './view/trip-tabs-view.js';
+import { createTripFiltersTemplate } from './view/trip-filters-view.js';
+import { createTripSortTemplate } from './view/trip-sort-view.js';
+import { createPointAddTemplate } from './view/point-add-view';
+import { createPointEditTemplate } from './view/point-edit-view';
+import { createPointTemplate } from './view/point-view';
 
 const menuContainer = document.querySelector('.trip-controls__navigation');
 const filterContainer = document.querySelector('.trip-controls__filters');
@@ -17,12 +18,20 @@ renderTemplate(menuContainer, createTripTabsTemplate(), RenderPosition.BEFOREEND
 renderTemplate(filterContainer, createTripFiltersTemplate(), RenderPosition.BEFOREEND);
 renderTemplate(sortContainer, createTripSortTemplate(), RenderPosition.BEFOREEND);
 sortContainer.appendChild(eventList);
-renderTemplate(eventList, createEventEditTemplate(), RenderPosition.BEFOREEND);
 
-for (let i = 1; i <= 3; i++) {
-  renderTemplate(eventList, createEventTemplate(), RenderPosition.BEFOREEND);
+const POINT_COUNT= 20;
+const points = [];
+for (let i = 0; i < POINT_COUNT; i++) {
+  points[i] = generatePoint();
 }
 
-renderTemplate(eventList, createEventAddTemplate(), RenderPosition.BEFOREEND);
+renderTemplate(eventList, createPointEditTemplate(), RenderPosition.BEFOREEND);
 
+for (let i = 1; i <= 3; i++) {
+  renderTemplate(eventList, createPointTemplate(points[i]), RenderPosition.BEFOREEND);
+}
+
+renderTemplate(eventList, createPointAddTemplate(), RenderPosition.BEFOREEND);
+
+console.log(points);
 
