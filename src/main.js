@@ -35,5 +35,4 @@ for (let i = 1; i < POINT_COUNT - 1; i++) {
 
 renderTemplate(eventList, createPointAddTemplate(points[points.length - 1]), RenderPosition.BEFOREEND);
 
-console.log(points);
 

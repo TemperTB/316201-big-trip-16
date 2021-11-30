@@ -2,6 +2,8 @@ import { transformDate, doFirstLetterUpperCase } from '../utils.js';
 import { OFFERS } from '../mock/offers.js';
 import { OFFER_TYPES } from '../const.js';
 
+const KEY_FOR_OFFER_TITLE = 'title';
+
 /**
  * Дополнительные опции
  * @param {Object[]} offers
@@ -9,7 +11,12 @@ import { OFFER_TYPES } from '../const.js';
 const createOffersTemplate = (offers) => {
   const addedOffers = [];
   for (const offer of offers) {
-    addedOffers.push(Object.entries(offer)[0][1]);
+    const entries = Object.entries(offer);
+    for (const entry of entries) {
+      if (entry[0] === KEY_FOR_OFFER_TITLE) {
+        addedOffers.push(entry[1]);
+      }
+    }
   }
 
   let template = '';
