@@ -19,7 +19,7 @@ renderTemplate(filterContainer, createTripFiltersTemplate(), RenderPosition.BEFO
 renderTemplate(sortContainer, createTripSortTemplate(), RenderPosition.BEFOREEND);
 sortContainer.appendChild(eventList);
 
-const POINT_COUNT= 20;
+const POINT_COUNT= 15;
 const points = [];
 for (let i = 0; i < POINT_COUNT; i++) {
   points[i] = generatePoint();
@@ -27,11 +27,11 @@ for (let i = 0; i < POINT_COUNT; i++) {
 
 renderTemplate(eventList, createPointEditTemplate(), RenderPosition.BEFOREEND);
 
-for (let i = 1; i <= 3; i++) {
+for (let i = 1; i < POINT_COUNT - 1; i++) {
   renderTemplate(eventList, createPointTemplate(points[i]), RenderPosition.BEFOREEND);
 }
 
-renderTemplate(eventList, createPointAddTemplate(), RenderPosition.BEFOREEND);
+renderTemplate(eventList, createPointAddTemplate(points[points.length - 1]), RenderPosition.BEFOREEND);
 
 console.log(points);
 

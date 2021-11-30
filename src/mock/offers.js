@@ -1,4 +1,4 @@
-const offers = [
+const OFFERS = [
   {
     title: 'For non-smokers',
     price: 50,
@@ -28,7 +28,7 @@ const generateOffers = (number) => {
   if (number === 0) {
     return [];
   }
-  return offers.slice(0, number);
+  return OFFERS.slice(0, number);
 };
 
-export { generateOffers };
+export { generateOffers, OFFERS };
