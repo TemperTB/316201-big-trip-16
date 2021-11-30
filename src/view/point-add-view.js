@@ -1,4 +1,4 @@
-import { transformDate } from '../utils.js';
+import { transformDate, doFirstLetterUpperCase } from '../utils.js';
 import { OFFERS } from '../mock/offers.js';
 import { OFFER_TYPES } from '../const.js';
 
@@ -51,7 +51,9 @@ const createEvenTypeItems = () => {
     template += `
       <div class="event__type-item">
         <input id="event-type-${offerType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${offerType}">
-        <label class="event__type-label  event__type-label--${offerType}" for="event-type-${offerType}-1">${offerType}</label>
+        <label class="event__type-label  event__type-label--${offerType}" for="event-type-${offerType}-1">${doFirstLetterUpperCase(
+  offerType,
+)}</label>
       </div>`;
   }
   return template;

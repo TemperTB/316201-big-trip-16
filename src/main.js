@@ -25,7 +25,7 @@ for (let i = 0; i < POINT_COUNT; i++) {
   points[i] = generatePoint();
 }
 
-renderTemplate(eventList, createPointEditTemplate(), RenderPosition.BEFOREEND);
+renderTemplate(eventList, createPointEditTemplate(points[0]), RenderPosition.BEFOREEND);
 
 for (let i = 1; i < POINT_COUNT - 1; i++) {
   renderTemplate(eventList, createPointTemplate(points[i]), RenderPosition.BEFOREEND);
