@@ -37,7 +37,7 @@ const MAX_PHOTOS = 3;
  * @returns {Object[]}
  */
 const generateDates = () => {
-  const maxDaysGap = 7;
+  const maxDaysGap = 2;
   const maxHoursGap = 24;
   const maxMinutesGap = 60;
   const firstDaysGap = getRandomInteger(-maxDaysGap, maxDaysGap);

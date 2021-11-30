@@ -1,22 +1,22 @@
 const offers = [
   {
-    title: 'Для некурящих',
+    title: 'For non-smokers',
     price: 50,
   },
   {
-    title: 'Наличие Wi-Fi',
+    title: 'Wi-Fi',
     price: 150,
   },
   {
-    title: 'Наличие зарядки',
+    title: 'Charging',
     price: 100,
   },
   {
-    title: 'Очень тихо',
+    title: 'Very quiet',
     price: 500,
   },
   {
-    title: 'Опция для галочки',
+    title: 'Some option',
     price: 10,
   },
 ];
