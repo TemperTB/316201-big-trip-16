@@ -8,8 +8,9 @@ import { TripEventsListView } from './view/trip-events-list-view.js';
 //import { PointAddView } from './view/point-add-view';
 import { PointEditView } from './view/point-edit-view';
 import { PointView } from './view/point-view';
+import { EmptyEventsListView } from './view/empty-events-view.js';
 
-const POINT_COUNT = 15;
+const POINT_COUNT = 0;
 const mainTripInfoContainer = document.querySelector('.trip-main');
 const menuContainer = document.querySelector('.trip-controls__navigation');
 const filterContainer = document.querySelector('.trip-controls__filters');
@@ -19,12 +20,9 @@ const points = [];
 for (let i = 0; i < POINT_COUNT; i++) {
   points[i] = generatePoint();
 }
-render(mainTripInfoContainer, new MainTripInfoView(points).element, RenderPosition.AFTERBEGIN);
 render(menuContainer, new TripTabsView().element, RenderPosition.BEFOREEND);
 render(filterContainer, new TripFiltersView().element, RenderPosition.BEFOREEND);
-render(sortContainer, new TripSortView().element, RenderPosition.BEFOREEND);
 const tripList = new TripEventsListView().element;
-render(sortContainer, tripList, RenderPosition.BEFOREEND);
 
 /**
  * Отрисовка точек маршрута и их редактирования
@@ -80,9 +78,17 @@ const renderPoint = (point) => {
   render(tripList, pointComponent.element, RenderPosition.BEFOREEND);
 };
 
-for (const point of points) {
-  renderPoint(point);
+if (points.length === 0) {
+  render(sortContainer, new EmptyEventsListView().element, RenderPosition.BEFOREEND);
+} else {
+  render(mainTripInfoContainer, new MainTripInfoView(points).element, RenderPosition.AFTERBEGIN);
+  render(sortContainer, new TripSortView().element, RenderPosition.BEFOREEND);
+  render(sortContainer, tripList, RenderPosition.BEFOREEND);
+  for (const point of points) {
+    renderPoint(point);
+  }
 }
+
 
 //render(tripList, new PointAddView(points[points.length-1]).element, RenderPosition.BEFOREEND);
 
