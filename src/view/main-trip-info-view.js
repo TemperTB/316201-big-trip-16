@@ -1,3 +1,4 @@
+import { createElement } from '../render.js';
 import { transformDate } from '../utils.js';
 
 const KEY_FOR_PRICE = 'price';
@@ -6,7 +7,7 @@ const KEY_FOR_DATE_BEGIN = 'dateBegin';
 const KEY_FOR_DATE_END = 'dateEnd';
 
 /**
- * Общая информация о путешевствии
+ * Разметка для общей информации о путешевствии
  */
 const createMainTripInfoTemplate = (points) => {
   let totalPrice = 0;
@@ -44,4 +45,32 @@ const createMainTripInfoTemplate = (points) => {
 </section>`;
 };
 
-export { createMainTripInfoTemplate };
+/**
+ * Общая информация о путешевствии
+ */
+class MainTripInfoView {
+  #element = null;
+  #points = [1];
+
+  constructor(points) {
+    this.#points = points;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createMainTripInfoTemplate(this.#points);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
+
+export { MainTripInfoView };

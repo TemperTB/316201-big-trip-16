@@ -1,7 +1,7 @@
 /**
  * Позиции вставки шаблона
  */
-const RenderPosition = {
+export const RenderPosition = {
   BEFOREBEGIN: 'beforebegin',
   AFTERBEGIN: 'afterbegin',
   BEFOREEND: 'beforeend',
@@ -9,13 +9,34 @@ const RenderPosition = {
 };
 
 /**
- * Добавляет шаблон в определенное место в контейнере
- * @param {Object} container - DOM-элемент
- * @param {String} template - шаблон
- * @param {String} place - место вставки
+ *  Рендер компонентов
+ * @param {*} container - родитель для вставки
+ * @param {*} element - элемент для вставки
+ * @param {*} place - куда именно вставлять
  */
-const renderTemplate = (container, template, place) => {
-  container.insertAdjacentHTML(place, template);
+export const render = (container, element, place) => {
+  switch (place) {
+    case RenderPosition.BEFOREBEGIN:
+      container.before(element);
+      break;
+    case RenderPosition.AFTERBEGIN:
+      container.prepend(element);
+      break;
+    case RenderPosition.BEFOREEND:
+      container.append(element);
+      break;
+    case RenderPosition.AFTEREND:
+      container.after(element);
+      break;
+  }
 };
 
-export { renderTemplate, RenderPosition };
+/**
+ * Создает элемент на основе разметки
+ */
+export const createElement = (template) => {
+  const newElement = document.createElement('div'); // 1
+  newElement.innerHTML = template;
+  return newElement.firstChild;
+};
+
