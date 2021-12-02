@@ -11,45 +11,20 @@ const KEY_FOR_DATE_END = 'dateEnd';
 const createMainTripInfoTemplate = (points) => {
   let totalPrice = 0;
   for (const point of points) {
-    const entries = Object.entries(point);
-    for (const entry of entries) {
-      if (entry[0] === KEY_FOR_PRICE) {
-        totalPrice += entry[1];
-      }
-    }
+    totalPrice += point[KEY_FOR_PRICE];
   }
 
   const cities = [];
-  const entriesForFirstCity = Object.entries(points[0]);
-  for (const entry of entriesForFirstCity) {
-    if (entry[0] === KEY_FOR_CITY) {
-      cities[0] = entry[1];
-    }
-  }
+  cities[0] = points[0][KEY_FOR_CITY];
+
   for (let i = 1; i < points.length; i++) {
-    const entries = Object.entries(points[i]);
-    for (const entry of entries) {
-      if (entry[0] === KEY_FOR_CITY && entry[1] !== cities[cities.length - 1]) {
-        cities.push(entry[1]);
-      }
+    if (points[i][KEY_FOR_CITY] !== cities[cities.length - 1]) {
+      cities.push(points[i][KEY_FOR_CITY]);
     }
   }
 
-  let dateBegin;
-  const entriesForDateBegin = Object.entries(points[0]);
-  for (const entry of entriesForDateBegin) {
-    if (entry[0] === KEY_FOR_DATE_BEGIN) {
-      dateBegin = entry[1];
-    }
-  }
-
-  let dateEnd;
-  const entriesForDateEnd = Object.entries(points[points.length - 1]);
-  for (const entry of entriesForDateEnd) {
-    if (entry[0] === KEY_FOR_DATE_END) {
-      dateEnd = entry[1];
-    }
-  }
+  const dateBegin = points[0][KEY_FOR_DATE_BEGIN];
+  const dateEnd = points[points.length - 1][KEY_FOR_DATE_END];
 
   return `<section class='trip-main__trip-info  trip-info'>
   <div class='trip-info__main'>

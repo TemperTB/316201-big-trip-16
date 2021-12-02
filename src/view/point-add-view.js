@@ -11,12 +11,7 @@ const KEY_FOR_OFFER_TITLE = 'title';
 const createOffersTemplate = (offers) => {
   const addedOffers = [];
   for (const offer of offers) {
-    const entries = Object.entries(offer);
-    for (const entry of entries) {
-      if (entry[0] === KEY_FOR_OFFER_TITLE) {
-        addedOffers.push(entry[1]);
-      }
-    }
+    addedOffers.push(offer[KEY_FOR_OFFER_TITLE]);
   }
 
   let template = '';
