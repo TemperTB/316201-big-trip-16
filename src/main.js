@@ -8,7 +8,7 @@ import { TripEventsListView } from './view/trip-events-list-view.js';
 //import { PointAddView } from './view/point-add-view';
 import { PointEditView } from './view/point-edit-view';
 import { PointView } from './view/point-view';
-import { EmptyEventsListView } from './view/empty-events-view.js';
+import { EmptyEventsListView } from './view/empty-events-list-view.js';
 
 const POINT_COUNT = 0;
 const mainTripInfoContainer = document.querySelector('.trip-main');
