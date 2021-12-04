@@ -1,7 +1,9 @@
+import { createElement } from '../render.js';
+
 /**
- * Фильтры
+ * Разметка для фильтров
  */
-const createTripFiltersTemplate = () => (
+const createTripFiltersTemplate = () =>
   `<form class="trip-filters" action="#" method="get">
     <div class="trip-filters__filter">
       <input id="filter-everything" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="everything" checked>
@@ -19,8 +21,29 @@ const createTripFiltersTemplate = () => (
     </div>
 
     <button class="visually-hidden" type="submit">Accept filter</button>
-  </form>`
-);
+  </form>`;
 
-export { createTripFiltersTemplate };
+/**
+ * Фильтры
+ */
+class TripFiltersView {
+  #element = null;
 
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createTripFiltersTemplate();
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
+
+export { TripFiltersView };
