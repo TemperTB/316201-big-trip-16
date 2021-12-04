@@ -14,20 +14,22 @@ export const RenderPosition = {
  * @param {*} element - элемент для вставки
  * @param {*} place - куда именно вставлять
  */
-export const render = (container, element, place) => {
+export const renderComponent = (container, component, place = RenderPosition.BEFOREEND) => {
   switch (place) {
     case RenderPosition.BEFOREBEGIN:
-      container.before(element);
+      container.before(component);
       break;
     case RenderPosition.AFTERBEGIN:
-      container.prepend(element);
+      container.prepend(component);
       break;
     case RenderPosition.BEFOREEND:
-      container.append(element);
+      container.append(component);
       break;
     case RenderPosition.AFTEREND:
-      container.after(element);
+      container.after(component);
       break;
+    default:
+      container.append(component);
   }
 };
 

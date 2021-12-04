@@ -1,4 +1,4 @@
-import { render, RenderPosition } from './render.js';
+import { renderComponent, RenderPosition } from './render.js';
 import { generatePoint } from './mock/point.js';
 import { MainTripInfoView } from './view/main-trip-info-view.js';
 import { TripTabsView } from './view/trip-tabs-view.js';
@@ -20,8 +20,8 @@ const points = [];
 for (let i = 0; i < POINT_COUNT; i++) {
   points[i] = generatePoint();
 }
-render(menuContainer, new TripTabsView().element, RenderPosition.BEFOREEND);
-render(filterContainer, new TripFiltersView().element, RenderPosition.BEFOREEND);
+renderComponent(menuContainer, new TripTabsView().element, RenderPosition.BEFOREEND);
+renderComponent(filterContainer, new TripFiltersView().element, RenderPosition.BEFOREEND);
 const tripList = new TripEventsListView().element;
 
 /**
@@ -75,21 +75,18 @@ const renderPoint = (point) => {
     document.removeEventListener('keydown', onEscKeyDown);
   });
 
-  render(tripList, pointComponent.element, RenderPosition.BEFOREEND);
+  renderComponent(tripList, pointComponent.element, RenderPosition.BEFOREEND);
 };
 
 if (points.length === 0) {
-  render(sortContainer, new EmptyEventsListView().element, RenderPosition.BEFOREEND);
+  renderComponent(sortContainer, new EmptyEventsListView().element, RenderPosition.BEFOREEND);
 } else {
-  render(mainTripInfoContainer, new MainTripInfoView(points).element, RenderPosition.AFTERBEGIN);
-  render(sortContainer, new TripSortView().element, RenderPosition.BEFOREEND);
-  render(sortContainer, tripList, RenderPosition.BEFOREEND);
+  renderComponent(mainTripInfoContainer, new MainTripInfoView(points).element, RenderPosition.AFTERBEGIN);
+  renderComponent(sortContainer, new TripSortView().element, RenderPosition.BEFOREEND);
+  renderComponent(sortContainer, tripList, RenderPosition.BEFOREEND);
   for (const point of points) {
     renderPoint(point);
   }
 }
 
-
 //render(tripList, new PointAddView(points[points.length-1]).element, RenderPosition.BEFOREEND);
-
-
