@@ -10,7 +10,7 @@ import { PointEditView } from './view/point-edit-view';
 import { PointView } from './view/point-view';
 import { EmptyEventsListView } from './view/empty-events-list-view.js';
 
-const POINT_COUNT = 0;
+const POINT_COUNT = 15;
 const mainTripInfoContainer = document.querySelector('.trip-main');
 const menuContainer = document.querySelector('.trip-controls__navigation');
 const filterContainer = document.querySelector('.trip-controls__filters');
