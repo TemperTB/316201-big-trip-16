@@ -46,7 +46,7 @@ const renderPoint = (point) => {
   /**
    * Действие при клике на стрелку для открытия формы редактирования
    */
-  pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+  pointComponent.setOnEditClick(() => {
     replaceElements(pointEditComponent, pointComponent);
     document.addEventListener('keydown', onEscKeyDown);
   });
@@ -54,8 +54,7 @@ const renderPoint = (point) => {
   /**
    * Действие при сохранении формы редактирования
    */
-  pointEditComponent.element.querySelector('form').addEventListener('submit', (evt) => {
-    evt.preventDefault();
+  pointEditComponent.setOnFormSubmit(() => {
     replaceElements(pointComponent, pointEditComponent);
     document.removeEventListener('keydown', onEscKeyDown);
   });

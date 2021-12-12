@@ -27,8 +27,8 @@ const createOffersTemplate = (offers) => {
     template += `
       <div class="event__offer-selector">
             <input class="event__offer-checkbox  visually-hidden" id="event-offer-${
-              offer.title
-            }" type="checkbox" name="event-offer-${offer.title}" ${addedOffers.includes(offer.title) ? 'checked' : ''}>
+  offer.title
+}" type="checkbox" name="event-offer-${offer.title}" ${addedOffers.includes(offer.title) ? 'checked' : ''}>
             <label class="event__offer-label" for="event-offer-${offer.title}">
               <span class="event__offer-title">${offer.title}</span>
               &plus;&euro;&nbsp;
@@ -49,8 +49,8 @@ const createEvenTypeItems = () => {
       <div class="event__type-item">
         <input id="event-type-${offerType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${offerType}">
         <label class="event__type-label  event__type-label--${offerType}" for="event-type-${offerType}-1">${doFirstLetterUpperCase(
-      offerType,
-    )}</label>
+  offerType,
+)}</label>
       </div>`;
   }
   return template;
@@ -94,15 +94,15 @@ const createPointEditTemplate = (point) => {
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
           <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${transformDate(
-            dateBegin,
-            'DD/MM/YY HH:mm',
-          )}">
+    dateBegin,
+    'DD/MM/YY HH:mm',
+  )}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">To</label>
           <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${transformDate(
-            dateEnd,
-            'DD/MM/YY HH:mm',
-          )}">
+    dateEnd,
+    'DD/MM/YY HH:mm',
+  )}">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -151,6 +151,16 @@ class PointEditView extends AbstractView {
   get template() {
     return createPointEditTemplate(this.#point);
   }
+
+  setOnFormSubmit = (callback) => {
+    this._callback.formSubmit = callback;
+    this.element.querySelector('form').addEventListener('submit', this.#onFormSubmit);
+  };
+
+  #onFormSubmit = (evt) => {
+    evt.preventDefault();
+    this._callback.formSubmit();
+  };
 }
 
 export { PointEditView };
