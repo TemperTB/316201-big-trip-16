@@ -1,5 +1,6 @@
-import { createElement } from '../render.js';
-import { transformDate, doFirstLetterUpperCase } from '../utils.js';
+import AbstractView from './abstract-view.js';
+import { transformDate } from '../utils/date.js';
+import { doFirstLetterUpperCase } from '../utils/common.js';
 import { OFFERS } from '../mock/offers.js';
 import { OFFER_TYPES } from '../const.js';
 
@@ -149,28 +150,16 @@ const createPointAddTemplate = (point) => {
 /**
  * Форма создания
  */
-class PointAddView {
-  #element = null;
+class PointAddView extends AbstractView {
   #point = null;
 
   constructor(point) {
+    super();
     this.#point = point;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createPointAddTemplate(this.#point);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
 

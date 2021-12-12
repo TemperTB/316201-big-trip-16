@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from './abstract-view.js';
 
 /**
  * Разметка для списка точек маршрута
@@ -10,23 +10,9 @@ const createTripEventsListTemplate = () =>
 /**
  * Список точек маршрута
  */
-class TripEventsListView {
-  #element = null;
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
+class TripEventsListView extends AbstractView {
   get template() {
     return createTripEventsListTemplate();
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
 

@@ -1,5 +1,5 @@
-import { createElement } from '../render.js';
-import { transformDate, calcDiffBetweenDates } from '../utils.js';
+import AbstractView from './abstract-view.js';
+import { transformDate, calcDiffBetweenDates } from '../utils/date.js';
 
 /**
  * Дополнительные опции
@@ -74,29 +74,27 @@ const createPointTemplate = (point) => {
 /**
  * Точка маршрута
  */
-class PointView {
-  #element = null;
+class PointView extends AbstractView {
   #point = null;
 
   constructor(point) {
+    super();
     this.#point = point;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createPointTemplate(this.#point);
   }
 
-  removeElement() {
-    this.#element = null;
-  }
+  setOnEditClick = (callback) => {
+    this._callback.editClick = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onEditClick);
+  };
+
+  #onEditClick = (evt) => {
+    evt.preventDefault();
+    this._callback.editClick();
+  };
 }
 
 export { PointView };

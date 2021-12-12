@@ -1,5 +1,5 @@
-import { createElement } from '../render.js';
-import { transformDate } from '../utils.js';
+import AbstractView from './abstract-view.js';
+import { transformDate } from '../utils/date.js';
 
 const KEY_FOR_PRICE = 'price';
 const KEY_FOR_CITY = 'tripTo';
@@ -48,28 +48,16 @@ const createMainTripInfoTemplate = (points) => {
 /**
  * Общая информация о путешевствии
  */
-class MainTripInfoView {
-  #element = null;
-  #points = [1];
+class MainTripInfoView extends AbstractView {
+  #points = [];
 
   constructor(points) {
+    super();
     this.#points = points;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createMainTripInfoTemplate(this.#points);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
 

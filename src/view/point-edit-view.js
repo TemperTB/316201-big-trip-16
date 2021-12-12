@@ -1,5 +1,6 @@
-import { transformDate, doFirstLetterUpperCase } from '../utils.js';
-import { createElement } from '../render.js';
+import AbstractView from './abstract-view.js';
+import { transformDate } from '../utils/date.js';
+import { doFirstLetterUpperCase } from '../utils/common.js';
 import { OFFERS } from '../mock/offers.js';
 import { OFFER_TYPES } from '../const.js';
 
@@ -47,7 +48,9 @@ const createEvenTypeItems = () => {
     template += `
       <div class="event__type-item">
         <input id="event-type-${offerType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${offerType}">
-        <label class="event__type-label  event__type-label--${offerType}" for="event-type-${offerType}-1">${doFirstLetterUpperCase(offerType)}</label>
+        <label class="event__type-label  event__type-label--${offerType}" for="event-type-${offerType}-1">${doFirstLetterUpperCase(
+  offerType,
+)}</label>
       </div>`;
   }
   return template;
@@ -57,7 +60,7 @@ const createEvenTypeItems = () => {
  * Разметка для формы изменения точки маршрута
  */
 const createPointEditTemplate = (point) => {
-  const { dateBegin, dateEnd, type, tripTo, price, offers, description, } = point;
+  const { dateBegin, dateEnd, type, tripTo, price, offers, description } = point;
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
       <header class="event__header">
@@ -137,29 +140,27 @@ const createPointEditTemplate = (point) => {
 /**
  * Форма изменения точки маршрута
  */
-class PointEditView {
-  #element = null;
+class PointEditView extends AbstractView {
   #point = null;
 
   constructor(point) {
+    super();
     this.#point = point;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createPointEditTemplate(this.#point);
   }
 
-  removeElement() {
-    this.#element = null;
-  }
+  setOnFormSubmit = (callback) => {
+    this._callback.formSubmit = callback;
+    this.element.querySelector('form').addEventListener('submit', this.#onFormSubmit);
+  };
+
+  #onFormSubmit = (evt) => {
+    evt.preventDefault();
+    this._callback.formSubmit();
+  };
 }
 
 export { PointEditView };

@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from './abstract-view.js';
 
 /**
  * Разметка для фильтров
@@ -26,23 +26,9 @@ const createTripFiltersTemplate = () =>
 /**
  * Фильтры
  */
-class TripFiltersView {
-  #element = null;
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
+class TripFiltersView extends AbstractView {
   get template() {
     return createTripFiltersTemplate();
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
 

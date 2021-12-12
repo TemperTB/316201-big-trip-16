@@ -1,11 +1,10 @@
-import { renderComponent, RenderPosition } from './render.js';
+import { renderElement, RenderPosition, replaceElements } from './utils/render.js';
 import { generatePoint } from './mock/point.js';
 import { MainTripInfoView } from './view/main-trip-info-view.js';
 import { TripTabsView } from './view/trip-tabs-view.js';
 import { TripFiltersView } from './view/trip-filters-view.js';
 import { TripSortView } from './view/trip-sort-view.js';
 import { TripEventsListView } from './view/trip-events-list-view.js';
-//import { PointAddView } from './view/point-add-view';
 import { PointEditView } from './view/point-edit-view';
 import { PointView } from './view/point-view';
 import { EmptyEventsListView } from './view/empty-events-list-view.js';
@@ -20,9 +19,9 @@ const points = [];
 for (let i = 0; i < POINT_COUNT; i++) {
   points[i] = generatePoint();
 }
-renderComponent(menuContainer, new TripTabsView().element, RenderPosition.BEFOREEND);
-renderComponent(filterContainer, new TripFiltersView().element, RenderPosition.BEFOREEND);
-const tripList = new TripEventsListView().element;
+renderElement(menuContainer, new TripTabsView(), RenderPosition.BEFOREEND);
+renderElement(filterContainer, new TripFiltersView(), RenderPosition.BEFOREEND);
+const tripList = new TripEventsListView();
 
 /**
  * Отрисовка точек маршрута и их редактирования
@@ -34,26 +33,12 @@ const renderPoint = (point) => {
   const pointEditComponent = new PointEditView(point);
 
   /**
-   * "Открытие" формы редактирования
-   */
-  const replacePointToEdit = () => {
-    tripList.replaceChild(pointEditComponent.element, pointComponent.element);
-  };
-
-  /**
-   * "Закрытие" формы редактирования
-   */
-  const replaceEditToPoint = () => {
-    tripList.replaceChild(pointComponent.element, pointEditComponent.element);
-  };
-
-  /**
    * Действие при нажатии Esc, когда открыта форма редактирования
    */
   const onEscKeyDown = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
-      replaceEditToPoint();
+      replaceElements(pointComponent, pointEditComponent);
       document.removeEventListener('keydown', onEscKeyDown);
     }
   };
@@ -61,32 +46,29 @@ const renderPoint = (point) => {
   /**
    * Действие при клике на стрелку для открытия формы редактирования
    */
-  pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
-    replacePointToEdit();
+  pointComponent.setOnEditClick(() => {
+    replaceElements(pointEditComponent, pointComponent);
     document.addEventListener('keydown', onEscKeyDown);
   });
 
   /**
-   * Действие при клике на стрелку для открытия формы редактирования
+   * Действие при сохранении формы редактирования
    */
-  pointEditComponent.element.querySelector('form').addEventListener('submit', (evt) => {
-    evt.preventDefault();
-    replaceEditToPoint();
+  pointEditComponent.setOnFormSubmit(() => {
+    replaceElements(pointComponent, pointEditComponent);
     document.removeEventListener('keydown', onEscKeyDown);
   });
 
-  renderComponent(tripList, pointComponent.element, RenderPosition.BEFOREEND);
+  renderElement(tripList, pointComponent, RenderPosition.BEFOREEND);
 };
 
 if (points.length === 0) {
-  renderComponent(sortContainer, new EmptyEventsListView().element, RenderPosition.BEFOREEND);
+  renderElement(sortContainer, new EmptyEventsListView(), RenderPosition.BEFOREEND);
 } else {
-  renderComponent(mainTripInfoContainer, new MainTripInfoView(points).element, RenderPosition.AFTERBEGIN);
-  renderComponent(sortContainer, new TripSortView().element, RenderPosition.BEFOREEND);
-  renderComponent(sortContainer, tripList, RenderPosition.BEFOREEND);
+  renderElement(mainTripInfoContainer, new MainTripInfoView(points), RenderPosition.AFTERBEGIN);
+  renderElement(sortContainer, new TripSortView(), RenderPosition.BEFOREEND);
+  renderElement(sortContainer, tripList, RenderPosition.BEFOREEND);
   for (const point of points) {
     renderPoint(point);
   }
 }
-
-//render(tripList, new PointAddView(points[points.length-1]).element, RenderPosition.BEFOREEND);
