@@ -5,7 +5,6 @@ import { TripTabsView } from './view/trip-tabs-view.js';
 import { TripFiltersView } from './view/trip-filters-view.js';
 import { TripSortView } from './view/trip-sort-view.js';
 import { TripEventsListView } from './view/trip-events-list-view.js';
-//import { PointAddView } from './view/point-add-view';
 import { PointEditView } from './view/point-edit-view';
 import { PointView } from './view/point-view';
 import { EmptyEventsListView } from './view/empty-events-list-view.js';
@@ -88,5 +87,3 @@ if (points.length === 0) {
     renderPoint(point);
   }
 }
-
-//render(tripList, new PointAddView(points[points.length-1]).element, RenderPosition.BEFOREEND);

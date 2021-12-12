@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from './abstract-view.js';
 import { transformDate } from '../utils.js';
 
 const KEY_FOR_PRICE = 'price';
@@ -30,13 +30,13 @@ const createMainTripInfoTemplate = (points) => {
   return `<section class='trip-main__trip-info  trip-info'>
   <div class='trip-info__main'>
     <h1 class='trip-info__title'>${
-  cities.length > 2 ? `${cities[0]} — ... — ${cities[cities.length - 1]}` : `${cities[0]} — ${cities[1]}`
-}</h1>
+      cities.length > 2 ? `${cities[0]} — ... — ${cities[cities.length - 1]}` : `${cities[0]} — ${cities[1]}`
+    }</h1>
 
     <p class='trip-info__dates'>${transformDate(dateBegin, 'DD MMM')}&nbsp;&mdash;&nbsp;${transformDate(
-  dateEnd,
-  'DD MMM',
-)}</p>
+    dateEnd,
+    'DD MMM',
+  )}</p>
   </div>
 
   <p class='trip-info__cost'>
@@ -48,28 +48,16 @@ const createMainTripInfoTemplate = (points) => {
 /**
  * Общая информация о путешевствии
  */
-class MainTripInfoView {
-  #element = null;
-  #points = [1];
+class MainTripInfoView extends AbstractView {
+  #points = [];
 
   constructor(points) {
+    super();
     this.#points = points;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createMainTripInfoTemplate(this.#points);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
 

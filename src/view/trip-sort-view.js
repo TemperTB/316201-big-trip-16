@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from './abstract-view.js';
 
 /**
  * Разметка для сортировки
@@ -34,23 +34,9 @@ const createTripSortTemplate = () =>
 /**
  * Сортировка
  */
-class TripSortView {
-  #element = null;
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
+class TripSortView extends AbstractView {
   get template() {
     return createTripSortTemplate();
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
 
