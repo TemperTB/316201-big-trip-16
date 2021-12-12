@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { OFFER_TYPES } from '../const.js';
-import { getRandomInteger } from '../utils.js';
+import { getRandomInteger } from '../utils/common.js';
 import { generateOffers } from './offers.js';
 
 const CITIES = [

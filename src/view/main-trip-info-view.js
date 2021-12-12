@@ -1,5 +1,5 @@
 import AbstractView from './abstract-view.js';
-import { transformDate } from '../utils.js';
+import { transformDate } from '../utils/date.js';
 
 const KEY_FOR_PRICE = 'price';
 const KEY_FOR_CITY = 'tripTo';
@@ -30,13 +30,13 @@ const createMainTripInfoTemplate = (points) => {
   return `<section class='trip-main__trip-info  trip-info'>
   <div class='trip-info__main'>
     <h1 class='trip-info__title'>${
-      cities.length > 2 ? `${cities[0]} — ... — ${cities[cities.length - 1]}` : `${cities[0]} — ${cities[1]}`
-    }</h1>
+  cities.length > 2 ? `${cities[0]} — ... — ${cities[cities.length - 1]}` : `${cities[0]} — ${cities[1]}`
+}</h1>
 
     <p class='trip-info__dates'>${transformDate(dateBegin, 'DD MMM')}&nbsp;&mdash;&nbsp;${transformDate(
-    dateEnd,
-    'DD MMM',
-  )}</p>
+  dateEnd,
+  'DD MMM',
+)}</p>
   </div>
 
   <p class='trip-info__cost'>

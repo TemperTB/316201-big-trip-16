@@ -1,5 +1,5 @@
 import AbstractView from './abstract-view.js';
-import { transformDate, calcDiffBetweenDates } from '../utils.js';
+import { transformDate, calcDiffBetweenDates } from '../utils/date.js';
 
 /**
  * Дополнительные опции
@@ -30,9 +30,9 @@ const createPointTemplate = (point) => {
   return `<li class="trip-events__item">
     <div class="event">
       <time class="event__date" datetime="${transformDate(dateBegin, 'YYYY-MM-DD')}">${transformDate(
-    dateBegin,
-    'MMM DD',
-  )}</time>
+  dateBegin,
+  'MMM DD',
+)}</time>
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
       </div>
@@ -40,14 +40,14 @@ const createPointTemplate = (point) => {
       <div class="event__schedule">
         <p class="event__time">
           <time class="event__start-time" datetime="${transformDate(dateBegin, 'YYYY-MM-DD')}">${transformDate(
-    dateBegin,
-    'HH:mm',
-  )}</time>
+  dateBegin,
+  'HH:mm',
+)}</time>
           &mdash;
           <time class="event__end-time" datetime="${transformDate(dateBegin, 'YYYY-MM-DD')}">${transformDate(
-    dateEnd,
-    'HH:mm',
-  )}</time>
+  dateEnd,
+  'HH:mm',
+)}</time>
         </p>
         <p class="event__duration">${calcDiffBetweenDates(dateEnd, dateBegin)}</p>
       </div>

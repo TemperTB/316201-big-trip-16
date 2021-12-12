@@ -1,5 +1,6 @@
 import AbstractView from './abstract-view.js';
-import { transformDate, doFirstLetterUpperCase } from '../utils.js';
+import { transformDate } from '../utils/date.js';
+import { doFirstLetterUpperCase } from '../utils/common.js';
 import { OFFERS } from '../mock/offers.js';
 import { OFFER_TYPES } from '../const.js';
 
