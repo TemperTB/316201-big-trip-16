@@ -3,17 +3,17 @@ import AbstractView from './abstract-view.js';
 /**
  * Разметка для списка точек маршрута
  */
-const createTripEventsListTemplate = () =>
+const createPointListTemplate = () =>
   `<ul class="trip-events__list">
   </ul>`;
 
 /**
  * Список точек маршрута
  */
-class TripEventsListView extends AbstractView {
+class PointListView extends AbstractView {
   get template() {
-    return createTripEventsListTemplate();
+    return createPointListTemplate();
   }
 }
 
-export { TripEventsListView };
+export { PointListView };
