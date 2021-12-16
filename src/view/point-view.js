@@ -86,21 +86,33 @@ class PointView extends AbstractView {
     return createPointTemplate(this.#point);
   }
 
+  /**
+   * Обработчик клика стрелку для открытия формы редактирования
+   */
   setOnEditClick = (callback) => {
     this._callback.editClick = callback;
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onEditClick);
   };
 
+  /**
+   * Действия при клике на стрелку для открытия формы редактирования
+   */
   #onEditClick = (evt) => {
     evt.preventDefault();
     this._callback.editClick();
   };
 
+  /**
+   * Обработчик клика на звездочку (избранное)
+   */
   setOnFavoriteClick = (callback) => {
     this._callback.favoriteClick = callback;
     this.element.querySelector('.event__favorite-btn').addEventListener('click', this.#onFavoriteClick);
   };
 
+  /**
+   * Действия при клике на звездочку (избранное)
+   */
   #onFavoriteClick = (evt) => {
     evt.preventDefault();
     this._callback.favoriteClick();

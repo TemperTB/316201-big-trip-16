@@ -26,6 +26,9 @@ class TripPresenter {
     this.#tripContainer = tripContainer;
   }
 
+  /**
+   * Инициализация
+   */
   init = (points) => {
     this.#points = [...points];
 
@@ -33,46 +36,85 @@ class TripPresenter {
     this.#renderTrip();
   };
 
+  /**
+   * Действие при изменении режима отображения точки маршрута
+   * По ТЗ все остальные формы редактирования должны закрыться
+   */
+  #handleModeChange = () => {
+    this.#pointPresenter.forEach((presenter) => presenter.resetView());
+  };
+
+  /**
+   * Действия при изменении данных
+   */
   #handlePointChange = (updatedPoint) => {
     this.#points = updateItem(this.#points, updatedPoint);
     this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
   };
 
+  /**
+   * Отрисовка пустого маршрута
+   */
   #renderEmptyTrip = () => {
     renderElement(this.#tripComponent, this.#emptyTripComponent, RenderPosition.BEFOREEND);
   };
 
+  /**
+   * Сортировка
+   */
   #renderSort = () => {
     renderElement(this.#tripComponent, this.#sortComponent, RenderPosition.BEFOREEND);
   };
 
+  /**
+   * Список точек маршрута
+   */
   #renderPointList = () => {
     renderElement(this.#tripComponent, this.#pointListComponent, RenderPosition.BEFOREEND);
     this.#renderPoints(0, this.#points.length);
   };
 
+  /**
+   * Очистка отрисованных точек маршрута
+   */
   #clearPointList = () => {
     this.#pointPresenter.forEach((presenter) => presenter.destroy());
     this.#pointPresenter.clear();
   };
 
+  /**
+   * Отрисовка точки маршрута
+   */
   #renderPoint = (point) => {
-    const pointPresenter = new PointPresenter(this.#pointListComponent, this.#handlePointChange);
+    const pointPresenter = new PointPresenter(
+      this.#pointListComponent,
+      this.#handlePointChange,
+      this.#handleModeChange,
+    );
     pointPresenter.init(point);
     this.#pointPresenter.set(point.id, pointPresenter);
   };
 
+  /**
+   * Отрисовка точек маршрута (от, до)
+   */
   #renderPoints = (from, to) => {
     for (let i = 0; i < to; i++) {
       this.#renderPoint(this.#points[i]);
     }
   };
 
+  /**
+   * Отрисовка информации о путешествии
+   */
   #renderTripInfo = () => {
     this.#tripInfoComponent = new MainTripInfoView(this.#points);
     renderElement(TripInfoContainer, this.#tripInfoComponent, RenderPosition.BEFOREEND);
   };
 
+  /**
+   * Отрисовка путешествия
+   */
   #renderTrip = () => {
     if (this.#points.length === 0) {
       this.#renderEmptyTrip();
