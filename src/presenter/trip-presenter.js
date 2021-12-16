@@ -3,10 +3,10 @@ import { TripView } from '../view/trip-view.js';
 import { TripSortView } from '../view/trip-sort-view.js';
 import { PointListView } from '../view/point-list-view.js';
 import { EmptyTripView } from '../view/empty-trip-view.js';
-
 import {MainTripInfoView} from '../view/main-trip-info-view.js';
 import { renderElement, RenderPosition } from '../utils/render.js';
 import { PointPresenter } from './point-presenter.js';
+import { updateItem } from '../utils/common.js';
 
 const TripInfoContainer = document.querySelector('.trip-main');
 
@@ -20,6 +20,7 @@ class TripPresenter {
   #sortComponent = new TripSortView();
 
   #points = [];
+  #pointPresenter = new Map();
 
   constructor(tripContainer) {
     this.#tripContainer = tripContainer;
@@ -30,6 +31,11 @@ class TripPresenter {
 
     renderElement(this.#tripContainer, this.#tripComponent, RenderPosition.BEFOREEND);
     this.#renderTrip();
+  };
+
+  #handlePointChange = (updatedPoint) => {
+    this.#points = updateItem(this.#points, updatedPoint);
+    this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
   };
 
   #renderEmptyTrip = () => {
@@ -45,9 +51,15 @@ class TripPresenter {
     this.#renderPoints(0, this.#points.length);
   };
 
+  #clearPointList = () => {
+    this.#pointPresenter.forEach((presenter) => presenter.destroy());
+    this.#pointPresenter.clear();
+  };
+
   #renderPoint = (point) => {
-    const pointPresenter = new PointPresenter(this.#pointListComponent);
+    const pointPresenter = new PointPresenter(this.#pointListComponent, this.#handlePointChange);
     pointPresenter.init(point);
+    this.#pointPresenter.set(point.id, pointPresenter);
   };
 
   #renderPoints = (from, to) => {

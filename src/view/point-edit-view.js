@@ -159,7 +159,7 @@ class PointEditView extends AbstractView {
 
   #onFormSubmit = (evt) => {
     evt.preventDefault();
-    this._callback.formSubmit();
+    this._callback.formSubmit(this.#point);
   };
 }
 

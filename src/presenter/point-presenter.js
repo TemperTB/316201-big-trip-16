@@ -4,14 +4,16 @@ import { renderElement, RenderPosition, replaceElements, removeComponent } from 
 
 class PointPresenter {
   #pointListContainer = null;
+  #changeData = null;
 
   #pointComponent = null;
   #pointEditComponent = null;
 
   #point = null;
 
-  constructor(pointListContainer) {
+  constructor(pointListContainer, changeData) {
     this.#pointListContainer = pointListContainer;
+    this.#changeData = changeData;
   }
 
   init = (point) => {
@@ -25,6 +27,7 @@ class PointPresenter {
 
     this.#pointComponent.setOnEditClick(this.#handleEditClick);
     this.#pointEditComponent.setOnFormSubmit(this.#handleFormSubmit);
+    this.#pointComponent.setOnFavoriteClick(this.#handleFavoriteClick);
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
       renderElement(this.#pointListContainer, this.#pointComponent, RenderPosition.BEFOREEND);
@@ -40,7 +43,7 @@ class PointPresenter {
     }
 
     removeComponent(prevPointComponent);
-    removeComponent(prevTaskEditComponent);
+    removeComponent(prevPointEditComponent);
   };
 
   destroy = () => {
@@ -69,10 +72,14 @@ class PointPresenter {
     this.#replaceCardToForm();
   };
 
-  #handleFormSubmit = () => {
+  #handleFormSubmit = (point) => {
+    this.#changeData(point);
     this.#replaceFormToCard();
   };
-}
 
+  #handleFavoriteClick = () => {
+    this.#changeData({ ...this.#point, isFavorite: !this.#point.isFavorite });
+  };
+}
 
 export { PointPresenter };
