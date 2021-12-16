@@ -1,6 +1,6 @@
 import { PointView } from '../view/point-view.js';
 import { PointEditView } from '../view/point-edit-view.js';
-import { renderElement, RenderPosition, replaceElements } from '../utils/render.js';
+import { renderElement, RenderPosition, replaceElements, removeComponent } from '../utils/render.js';
 
 class PointPresenter {
   #pointListContainer = null;
@@ -17,13 +17,35 @@ class PointPresenter {
   init = (point) => {
     this.#point = point;
 
+    const prevPointComponent = this.#pointComponent;
+    const prevPointEditComponent = this.#pointEditComponent;
+
     this.#pointComponent = new PointView(point);
     this.#pointEditComponent = new PointEditView(point);
 
     this.#pointComponent.setOnEditClick(this.#handleEditClick);
     this.#pointEditComponent.setOnFormSubmit(this.#handleFormSubmit);
 
-    renderElement(this.#pointListContainer, this.#pointComponent, RenderPosition.BEFOREEND);
+    if (prevPointComponent === null || prevPointEditComponent === null) {
+      renderElement(this.#pointListContainer, this.#pointComponent, RenderPosition.BEFOREEND);
+      return;
+    }
+
+    if (this.#pointListContainer.element.contains(prevPointComponent.element)) {
+      replaceElements(this.#pointComponent, prevPointComponent);
+    }
+
+    if (this.#pointListContainer.element.contains(prevPointEditComponent.element)) {
+      replaceElements(this.#pointEditComponent, prevPointEditComponent);
+    }
+
+    removeComponent(prevPointComponent);
+    removeComponent(prevTaskEditComponent);
+  };
+
+  destroy = () => {
+    removeComponent(this.#pointComponent);
+    removeComponent(this.#pointEditComponent);
   };
 
   #replaceCardToForm = () => {
