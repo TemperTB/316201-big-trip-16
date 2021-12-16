@@ -3,17 +3,15 @@ import { TripView } from '../view/trip-view.js';
 import { TripSortView } from '../view/trip-sort-view.js';
 import { PointListView } from '../view/point-list-view.js';
 import { EmptyTripView } from '../view/empty-trip-view.js';
-import { PointView } from '../view/point-view.js';
-import { PointEditView } from '../view/point-edit-view.js';
+
 import {MainTripInfoView} from '../view/main-trip-info-view.js';
-import { renderElement, RenderPosition, replaceElements } from '../utils/render.js';
+import { renderElement, RenderPosition } from '../utils/render.js';
+import { PointPresenter } from './point-presenter.js';
 
 const TripInfoContainer = document.querySelector('.trip-main');
 
 class TripPresenter {
   #tripContainer = null;
-  #pointComponent = null;
-  #pointEditComponent = null;
   #tripInfoComponent = null;
 
   #tripComponent = new TripView();
@@ -48,37 +46,8 @@ class TripPresenter {
   };
 
   #renderPoint = (point) => {
-    this.#pointComponent = new PointView(point);
-    this.#pointEditComponent = new PointEditView(point);
-
-    /**
-     * Действие при нажатии Esc, когда открыта форма редактирования
-     */
-    const onEscKeyDown = (evt) => {
-      if (evt.key === 'Escape' || evt.key === 'Esc') {
-        evt.preventDefault();
-        replaceElements(this.#pointComponent, this.#pointEditComponent);
-        document.removeEventListener('keydown', onEscKeyDown);
-      }
-    };
-
-    /**
-     * Действие при клике на стрелку для открытия формы редактирования
-     */
-    this.#pointComponent.setOnEditClick(() => {
-      replaceElements(this.#pointEditComponent, this.#pointComponent);
-      document.addEventListener('keydown', onEscKeyDown);
-    });
-
-    /**
-     * Действие при сохранении формы редактирования
-     */
-    this.#pointEditComponent.setOnFormSubmit(() => {
-      replaceElements(this.#pointComponent, this.#pointEditComponent);
-      document.removeEventListener('keydown', onEscKeyDown);
-    });
-
-    renderElement(this.#pointListComponent, this.#pointComponent, RenderPosition.BEFOREEND);
+    const pointPresenter = new PointPresenter(this.#pointListComponent);
+    pointPresenter.init(point);
   };
 
   #renderPoints = (from, to) => {
