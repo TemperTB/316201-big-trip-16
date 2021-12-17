@@ -152,14 +152,20 @@ class PointEditView extends AbstractView {
     return createPointEditTemplate(this.#point);
   }
 
+  /**
+   * Обработчик при нажатии кнопки Save (отправка формы)
+   */
   setOnFormSubmit = (callback) => {
     this._callback.formSubmit = callback;
     this.element.querySelector('form').addEventListener('submit', this.#onFormSubmit);
   };
 
+  /**
+   * Действия при нажатии кнопки Save (отправка формы)
+   */
   #onFormSubmit = (evt) => {
     evt.preventDefault();
-    this._callback.formSubmit();
+    this._callback.formSubmit(this.#point);
   };
 }
 

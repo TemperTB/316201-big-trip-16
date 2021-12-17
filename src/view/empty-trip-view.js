@@ -3,16 +3,16 @@ import AbstractView from './abstract-view.js';
 /**
  * Разметка для списка точек маршрута
  */
-const createEmptyEventsListTemplate = () =>
+const createEmptyTripTemplate = () =>
   '<p class="trip-events__msg">Click New Event to create your first point</p>';
 
 /**
  * Список точек маршрута
  */
-class EmptyEventsListView extends AbstractView {
+class EmptyTripView extends AbstractView {
   get template() {
-    return createEmptyEventsListTemplate();
+    return createEmptyTripTemplate();
   }
 }
 
-export { EmptyEventsListView };
+export { EmptyTripView };

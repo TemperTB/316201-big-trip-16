@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { nanoid } from 'nanoid';
 import { OFFER_TYPES } from '../const.js';
 import { getRandomInteger } from '../utils/common.js';
 import { generateOffers } from './offers.js';
@@ -90,19 +91,20 @@ const generatePoint = () => {
   const type = OFFER_TYPES[getRandomInteger(0, OFFER_TYPES.length - 1)];
   const tripTo = CITIES[getRandomInteger(0, CITIES.length - 1)];
   const price = getRandomInteger(1, MAX_PRICE);
-  const isFavourite = Boolean(getRandomInteger(0, 1));
+  const isFavorite = Boolean(getRandomInteger(0, 1));
   const description = generateDescription();
   const photos = generatePhotos();
   const offers = generateOffers(getRandomInteger(0, MAX_OFFERS));
 
   return {
+    id: nanoid(),
     dateBegin: dates[0],
     dateEnd: dates[1],
     type,
     tripTo,
     price,
     offers,
-    isFavourite,
+    isFavorite,
     description,
     photos,
   };
