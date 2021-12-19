@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { nanoid } from 'nanoid';
-import { OFFER_TYPES } from '../const.js';
+import { EVENT_TYPES } from '../const.js';
 import { getRandomInteger } from '../utils/common.js';
 import { generateOffers } from './offers.js';
 
@@ -88,7 +88,7 @@ const generatePhotos = () => {
  */
 const generatePoint = () => {
   const dates = generateDates();
-  const type = OFFER_TYPES[getRandomInteger(0, OFFER_TYPES.length - 1)];
+  const type = EVENT_TYPES[getRandomInteger(0, EVENT_TYPES.length - 1)];
   const tripTo = CITIES[getRandomInteger(0, CITIES.length - 1)];
   const price = getRandomInteger(1, MAX_PRICE);
   const isFavorite = Boolean(getRandomInteger(0, 1));

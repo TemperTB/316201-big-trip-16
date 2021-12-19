@@ -2,7 +2,7 @@ import AbstractView from './abstract-view.js';
 import { transformDate } from '../utils/date.js';
 import { doFirstLetterUpperCase } from '../utils/common.js';
 import { OFFERS } from '../mock/offers.js';
-import { OFFER_TYPES } from '../const.js';
+import { EVENT_TYPES } from '../const.js';
 
 const KEY_FOR_OFFER_TITLE = 'title';
 
@@ -44,12 +44,12 @@ const createOffersTemplate = (offers) => {
  */
 const createEvenTypeItems = () => {
   let template = '';
-  for (const offerType of OFFER_TYPES) {
+  for (const eventType of EVENT_TYPES) {
     template += `
       <div class="event__type-item">
-        <input id="event-type-${offerType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${offerType}">
-        <label class="event__type-label  event__type-label--${offerType}" for="event-type-${offerType}-1">${doFirstLetterUpperCase(
-  offerType,
+        <input id="event-type-${eventType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${eventType}">
+        <label class="event__type-label  event__type-label--${eventType}" for="event-type-${eventType}-1">${doFirstLetterUpperCase(
+  eventType,
 )}</label>
       </div>`;
   }
