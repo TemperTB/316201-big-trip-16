@@ -1,32 +1,28 @@
 import AbstractView from './abstract-view.js';
 import { transformDate } from '../utils/date.js';
 import { doFirstLetterUpperCase } from '../utils/common.js';
+import { EVENT_TYPES, } from '../const.js';
 import { OFFERS } from '../mock/offers.js';
-import { OFFER_TYPES } from '../const.js';
-
-const KEY_FOR_OFFER_TITLE = 'title';
 
 /**
  * Дополнительные опции
- * @param {Object[]} offers
  */
-const createOffersTemplate = (offers) => {
-  const addedOffers = [];
-  for (const offer of offers) {
-    addedOffers.push(offer[KEY_FOR_OFFER_TITLE]);
-  }
-
-  let template = '';
+const createOffersTemplate = (type) => {
+  let thisType;
   for (const offer of OFFERS) {
+    if (offer.type === type) {
+      thisType = offer;
+    }
+  }
+  let template = '';
+  for (let i = 0; i < thisType.offers.length; i++) {
     template += `
       <div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-${
-  offer.title
-}" type="checkbox" name="event-offer-${offer.title}" ${addedOffers.includes(offer.title) ? 'checked' : ''}>
-            <label class="event__offer-label" for="event-offer-${offer.title}">
-              <span class="event__offer-title">${offer.title}</span>
+            <input class="event__offer-checkbox  visually-hidden" id="event-offer-${thisType.type}-${thisType.offers[i].id}" type="checkbox" name="event-offer-${thisType.type}-${thisType.offers[i].id}">
+            <label class="event__offer-label" for="event-offer-${thisType.type}-${thisType.offers[i].id}">
+              <span class="event__offer-title">${thisType.offers[i].title}</span>
               &plus;&euro;&nbsp;
-              <span class="event__offer-price">${offer.price}</span>
+              <span class="event__offer-price">${thisType.offers[i].price}</span>
             </label>
           </div>`;
   }
@@ -41,7 +37,7 @@ const createPhotosTemplate = (photos) => {
   let template = '';
   for (const photo of photos) {
     template += `
-      <img class="event__photo" src="${photo}" alt="Event photo">`;
+      <img class="event__photo" src="${photo.src}" alt="${photo.description}">`;
   }
   return template;
 };
@@ -51,7 +47,7 @@ const createPhotosTemplate = (photos) => {
  */
 const createEvenTypeItems = () => {
   let template = '';
-  for (const offerType of OFFER_TYPES) {
+  for (const offerType of EVENT_TYPES) {
     template += `
       <div class="event__type-item">
         <input id="event-type-${offerType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${offerType}">
@@ -67,7 +63,7 @@ const createEvenTypeItems = () => {
  * Разметка для формы создания
  */
 const createPointAddTemplate = (point) => {
-  const { dateBegin, dateEnd, type, tripTo, offers, description, photos } = point;
+  const { dateBegin, dateEnd, type, destination } = point;
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
       <header class="event__header">
@@ -90,7 +86,9 @@ const createPointAddTemplate = (point) => {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${tripTo}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${
+  destination.name
+}" list="destination-list-1">
           <datalist id="destination-list-1">
             <option value="Amsterdam"></option>
             <option value="Geneva"></option>
@@ -128,17 +126,17 @@ const createPointAddTemplate = (point) => {
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
           <div class="event__available-offers">
-            ${createOffersTemplate(offers)}
+            ${createOffersTemplate(type)}
           </div>
         </section>
 
         <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${description}</p>
+          <p class="event__destination-description">${destination.description}</p>
 
           <div class="event__photos-container">
             <div class="event__photos-tape">
-              ${createPhotosTemplate(photos)}
+              ${createPhotosTemplate(destination.pictures)}
             </div>
           </div>
         </section>

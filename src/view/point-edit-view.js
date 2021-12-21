@@ -1,38 +1,39 @@
 import AbstractView from './abstract-view.js';
 import { transformDate } from '../utils/date.js';
 import { doFirstLetterUpperCase } from '../utils/common.js';
-import { OFFERS } from '../mock/offers.js';
 import { EVENT_TYPES } from '../const.js';
-
-const KEY_FOR_OFFER_TITLE = 'title';
+import { OFFERS } from '../mock/offers.js';
 
 /**
  * Дополнительные опции
  * @param {Object[]} offers
  */
-const createOffersTemplate = (offers) => {
+const createOffersTemplate = (type, offers) => {
+  let thisType;
+  for (const offer of OFFERS) {
+    if (offer.type === type) {
+      thisType = offer;
+    }
+  }
+
   const addedOffers = [];
   for (const offer of offers) {
-    addedOffers.push(offer[KEY_FOR_OFFER_TITLE]);
-    // const entries = Object.entries(offer);
-    // for (const entry of entries) {
-    //   if (entry[0] === KEY_FOR_OFFER_TITLE) {
-    //     addedOffers.push(entry[1]);
-    //   }
-    // }
+    addedOffers.push(offer.id);
   }
 
   let template = '';
-  for (const offer of OFFERS) {
+  for (let i = 0; i < thisType.offers.length; i++) {
     template += `
       <div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-${
-  offer.title
-}" type="checkbox" name="event-offer-${offer.title}" ${addedOffers.includes(offer.title) ? 'checked' : ''}>
-            <label class="event__offer-label" for="event-offer-${offer.title}">
-              <span class="event__offer-title">${offer.title}</span>
+            <input class="event__offer-checkbox  visually-hidden" id="event-offer-${thisType.type}-${
+  thisType.offers[i].id
+}" type="checkbox" name="event-offer-${thisType.type}-${thisType.offers[i].id}" ${
+  addedOffers.includes(thisType.offers[i].id) ? 'checked' : ''
+}>
+            <label class="event__offer-label" for="event-offer-${thisType.type}-${thisType.offers[i].id}">
+              <span class="event__offer-title">${thisType.offers[i].title}</span>
               &plus;&euro;&nbsp;
-              <span class="event__offer-price">${offer.price}</span>
+              <span class="event__offer-price">${thisType.offers[i].price}</span>
             </label>
           </div>`;
   }
@@ -60,7 +61,7 @@ const createEvenTypeItems = () => {
  * Разметка для формы изменения точки маршрута
  */
 const createPointEditTemplate = (point) => {
-  const { dateBegin, dateEnd, type, tripTo, price, offers, description } = point;
+  const { dateBegin, dateEnd, type, destination, price, offers } = point;
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
       <header class="event__header">
@@ -83,26 +84,34 @@ const createPointEditTemplate = (point) => {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${tripTo}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${
+            destination.name
+          }" list="destination-list-1">
           <datalist id="destination-list-1">
-            <option value="Amsterdam"></option>
-            <option value="Geneva"></option>
-            <option value="Chamonix"></option>
+            <option value="Moscow"></option>
+            <option value="London"></option>
+            <option value="Paris"></option>
+            <option value="Noyabrsk"></option>
+            <option value="Dublin"></option>
+            <option value="New-York"></option>
+            <option value="Chelyabinsk"></option>
+            <option value="Ekaterinburg"></option>
+            <option value="Belgorod"></option>
           </datalist>
         </div>
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
           <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${transformDate(
-    dateBegin,
-    'DD/MM/YY HH:mm',
-  )}">
+            dateBegin,
+            'DD/MM/YY HH:mm',
+          )}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">To</label>
           <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${transformDate(
-    dateEnd,
-    'DD/MM/YY HH:mm',
-  )}">
+            dateEnd,
+            'DD/MM/YY HH:mm',
+          )}">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -124,13 +133,13 @@ const createPointEditTemplate = (point) => {
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
           <div class="event__available-offers">
-            ${createOffersTemplate(offers)}
+            ${createOffersTemplate(type, offers)}
           </div>
         </section>
 
         <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${description}</p>
+          <p class="event__destination-description">${destination.description}</p>
         </section>
       </section>
     </form>
@@ -141,16 +150,36 @@ const createPointEditTemplate = (point) => {
  * Форма изменения точки маршрута
  */
 class PointEditView extends AbstractView {
-  #point = null;
-
   constructor(point) {
     super();
-    this.#point = point;
+    this._data = PointEditView.parsePointToData(point);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#onDestinationNameChange);
+    this.element.querySelector('.event__type-group').addEventListener('change', this.#onTypeChange);
   }
 
   get template() {
-    return createPointEditTemplate(this.#point);
+    return createPointEditTemplate(this._data);
   }
+
+  updateData = (update) => {
+    if (!update) {
+      return;
+    }
+
+    this._data = { ...this._data, ...update };
+
+    this.updateElement();
+  };
+
+  updateElement = () => {
+    const prevElement = this.element;
+    const parent = prevElement.parentElement;
+    this.removeElement();
+
+    const newElement = this.element;
+
+    parent.replaceChild(newElement, prevElement);
+  };
 
   /**
    * Обработчик при нажатии кнопки Save (отправка формы)
@@ -161,11 +190,56 @@ class PointEditView extends AbstractView {
   };
 
   /**
+   * Действия при изменении названия города
+   */
+  #onDestinationNameChange = () => {
+    console.log(1);
+  };
+
+  /**
+   * Действия при изменении типа точки маршрута
+   */
+  #onTypeChange = () => {
+    console.log(2);
+  };
+
+  /**
    * Действия при нажатии кнопки Save (отправка формы)
    */
   #onFormSubmit = (evt) => {
     evt.preventDefault();
-    this._callback.formSubmit(this.#point);
+    this._callback.formSubmit(this._data);
+  };
+
+  static parsePointToData = (point) => ({
+    ...point,
+    // isDueDate: point.dueDate !== null,
+    // isRepeating: isTaskRepeating(point.repeating),
+  });
+
+  static parseDataToPoint = (data) => {
+    const point = { ...data };
+
+    //   if (!point.isDueDate) {
+    //     point.dueDate = null;
+    //   }
+
+    //   if (!point.isRepeating) {
+    //     point.repeating = {
+    //       mo: false,
+    //       tu: false,
+    //       we: false,
+    //       th: false,
+    //       fr: false,
+    //       sa: false,
+    //       su: false,
+    //     };
+    //   }
+
+    //   delete point.isDueDate;
+    //   delete point.isRepeating;
+
+    return point;
   };
 }
 

@@ -25,7 +25,7 @@ const createOffersTemplate = (offers) => {
  * Разметки точка маршрута
  */
 const createPointTemplate = (point) => {
-  const { dateBegin, dateEnd, type, tripTo, price, offers, isFavorite } = point;
+  const { dateBegin, dateEnd, type, destination, price, offers, isFavorite } = point;
 
   return `<li class="trip-events__item">
     <div class="event">
@@ -36,7 +36,7 @@ const createPointTemplate = (point) => {
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
       </div>
-      <h3 class="event__title">${type} ${tripTo}</h3>
+      <h3 class="event__title">${type} ${destination.name}</h3>
       <div class="event__schedule">
         <p class="event__time">
           <time class="event__start-time" datetime="${transformDate(dateBegin, 'YYYY-MM-DD')}">${transformDate(
