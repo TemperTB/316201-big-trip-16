@@ -26,10 +26,10 @@ const createOffersTemplate = (type, offers) => {
     template += `
       <div class="event__offer-selector">
             <input class="event__offer-checkbox  visually-hidden" id="event-offer-${thisType.type}-${
-  thisType.offers[i].id
-}" type="checkbox" name="event-offer-${thisType.type}-${thisType.offers[i].id}" ${
-  addedOffers.includes(thisType.offers[i].id) ? 'checked' : ''
-}>
+      thisType.offers[i].id
+    }" type="checkbox" name="event-offer-${thisType.type}-${thisType.offers[i].id}" ${
+      addedOffers.includes(thisType.offers[i].id) ? 'checked' : ''
+    }>
             <label class="event__offer-label" for="event-offer-${thisType.type}-${thisType.offers[i].id}">
               <span class="event__offer-title">${thisType.offers[i].title}</span>
               &plus;&euro;&nbsp;
@@ -50,8 +50,8 @@ const createEvenTypeItems = () => {
       <div class="event__type-item">
         <input id="event-type-${eventType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${eventType}">
         <label class="event__type-label  event__type-label--${eventType}" for="event-type-${eventType}-1">${doFirstLetterUpperCase(
-  eventType,
-)}</label>
+      eventType,
+    )}</label>
       </div>`;
   }
   return template;
@@ -199,8 +199,10 @@ class PointEditView extends AbstractView {
   /**
    * Действия при изменении типа точки маршрута
    */
-  #onTypeChange = () => {
-    console.log(2);
+  #onTypeChange = (evt) => {
+    this.element.querySelector('.event__type-icon').src = `img/icons/${evt.target.value}.png`;
+    this.element.querySelector('.event__type-output').textContent = evt.target.value;
+    this.element.querySelector('.event__type-toggle:checked').checked = false;
   };
 
   /**
