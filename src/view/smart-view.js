@@ -10,7 +10,9 @@ class SmartView extends AbstractView {
    * @param {boolean} justDataUpdating - надо ли перерисовывать компонент
    */
   updateData = (update, justDataUpdating) => {
+
     this._data = { ...this._data, ...update };
+
     if (justDataUpdating) {
       return;
     }

@@ -158,6 +158,15 @@ class PointEditView extends SmartView {
   }
 
   /**
+   * Отменяет изменения в компоненте.
+   * Переводит компонент в состояние, которое передается в параметрах
+   * @param point - состояние к которому нужно привести компонент
+   */
+  reset = (point) => {
+    this.updateData(PointEditView.parsePointToData(point));
+  };
+
+  /**
    * Восстанавливает обработчики
    */
   restoreHandlers = () => {
