@@ -13,6 +13,11 @@ const MINUTES_IN_DAY = 1440;
 const transformDate = (date, format) => dayjs(date).format(format);
 
 /**
+ * Возвращает тип дата
+ */
+const getDate = (date) => dayjs(date);
+
+/**
  * Вычисляет разницу между датой окончания и датой начала
  * @param {Date} dateEnd - дата окончания
  * @param {Date} dateBegin - дата начала
@@ -35,4 +40,5 @@ const calcDiffBetweenDates = (dateEnd, dateBegin) => {
   }
 };
 
-export { transformDate, calcDiffBetweenDates };
+
+export { transformDate, calcDiffBetweenDates, getDate };
