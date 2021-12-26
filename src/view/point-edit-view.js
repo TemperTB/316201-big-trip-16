@@ -1,8 +1,11 @@
 import { SmartView } from './smart-view.js';
-import { transformDate } from '../utils/date.js';
+import { getDate } from '../utils/date.js';
 import { doFirstLetterUpperCase } from '../utils/common.js';
 import { EVENT_TYPES } from '../const.js';
 import { OFFERS } from '../mock/offers.js';
+import flatpickr from 'flatpickr';
+
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 /**
  * Дополнительные опции
@@ -60,7 +63,8 @@ const createEvenTypeItems = () => {
  * Разметка для формы изменения точки маршрута
  */
 const createPointEditTemplate = (_data) => {
-  const { dateBegin, dateEnd, destination, price, offers, typeForElement, destinationName } = _data;
+  const { destination, price, offers, typeForElement, destinationName, dateBeginForElement, dateEndForElement } =
+    _data;
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
       <header class="event__header">
@@ -99,15 +103,13 @@ const createPointEditTemplate = (_data) => {
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${transformDate(
-    dateBegin,
-    'DD/MM/YY HH:mm',
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${getDate(
+    dateBeginForElement
   )}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${transformDate(
-    dateEnd,
-    'DD/MM/YY HH:mm',
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${getDate(
+    dateEndForElement
   )}">
         </div>
 
@@ -147,10 +149,14 @@ const createPointEditTemplate = (_data) => {
  * Форма изменения точки маршрута
  */
 class PointEditView extends SmartView {
+  #dateBeginPicker = null;
+  #dateEndPicker = null;
+
   constructor(point) {
     super();
     this._data = PointEditView.parsePointToData(point);
     this.#setOnInner();
+    this.#setDatepicker();
   }
 
   get template() {
@@ -172,6 +178,25 @@ class PointEditView extends SmartView {
   restoreHandlers = () => {
     this.#setOnInner();
     this.setOnFormSubmit(this._callback.formSubmit);
+    this.#setDatepicker();
+  };
+
+  /**
+   * Отрисовка flatpicker при клике на даты
+   */
+  #setDatepicker = () => {
+    const datepickers = this.element.querySelectorAll('.event__input--time');
+    this.#dateBeginPicker = flatpickr(datepickers[0], {
+      dateFormat: 'd/m/Y H:i',
+      enableTime: true,
+      onChange: this.#onDateBeginChange,
+    });
+
+    this.#dateEndPicker = flatpickr(datepickers[1], {
+      dateFormat: 'd/m/Y H:i',
+      enableTime: true,
+      onChange: this.#onDateEndChange,
+    });
   };
 
   /**
@@ -214,6 +239,24 @@ class PointEditView extends SmartView {
   };
 
   /**
+   * Действия при изменении даты/время начала точки маршрута
+   */
+  #onDateBeginChange = ([userDate]) => {
+    this.updateData({
+      dateBeginForElement: userDate,
+    }, true);
+  };
+
+  /**
+   * Действия при изменении даты/время окончания точки маршрута
+   */
+  #onDateEndChange = ([userDate]) => {
+    this.updateData({
+      dateEndForElement: userDate,
+    }, true);
+  };
+
+  /**
    * Действия при нажатии кнопки Save (отправка формы)
    */
   #onFormSubmit = (evt) => {
@@ -229,6 +272,8 @@ class PointEditView extends SmartView {
     ...point,
     typeForElement: point.type,
     destinationName: point.destination.name,
+    dateBeginForElement: point.dateBegin,
+    dateEndForElement: point.dateEnd,
   });
 
   /**
@@ -239,11 +284,31 @@ class PointEditView extends SmartView {
 
     point.type = point.typeForElement;
     point.destination.name = point.destinationName;
+    point.dateBegin = point.dateBeginForElement;
+    point.dateEnd = point.dateEndForElement;
 
     delete point.typeForElement;
     delete point.destinationName;
+    delete point.dateBeginForElement;
+    delete point.dateEndForElement;
 
     return point;
+  };
+
+  /**
+   * Перегружаем метод удаления элемента, чтобы при удалении удалялся более не нужный календарь.
+   */
+  removeElement = () => {
+    super.removeElement();
+
+    if (this.#dateBeginPicker) {
+      this.#dateBeginPicker.destroy();
+      this.#dateBeginPicker = null;
+    }
+    if (this.#dateEndPicker) {
+      this.#dateEndPicker.destroy();
+      this.#dateEndPicker = null;
+    }
   };
 }
 
