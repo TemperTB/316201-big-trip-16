@@ -1,3 +1,4 @@
+import he from 'he';
 import { SmartView } from './smart-view.js';
 import { getDate } from '../utils/date.js';
 import { doFirstLetterUpperCase } from '../utils/common.js';
@@ -34,7 +35,6 @@ const NEW_POINT = {
  * @param {Object[]} offers
  */
 const createOffersTemplate = (thisType, offers) => {
-
   const addedOffers = [];
   for (const offer of offers) {
     addedOffers.push(offer.id);
@@ -44,11 +44,9 @@ const createOffersTemplate = (thisType, offers) => {
   for (let i = 0; i < thisType.offers.length; i++) {
     template += `
       <div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="${
+            <input class="event__offer-checkbox  visually-hidden" id="${thisType.offers[i].id}" type="checkbox" name="${
   thisType.offers[i].id
-}" type="checkbox" name="${thisType.offers[i].id}" ${
-  addedOffers.includes(thisType.offers[i].id) ? 'checked' : ''
-}>
+}" ${addedOffers.includes(thisType.offers[i].id) ? 'checked' : ''}>
             <label class="event__offer-label" for="${thisType.offers[i].id}">
               <span class="event__offer-title">${thisType.offers[i].title}</span>
               &plus;&euro;&nbsp;
@@ -102,7 +100,15 @@ const createEvenTypeItems = () => {
  * Разметка для формы изменения точки маршрута
  */
 const createPointEditTemplate = (_data) => {
-  const { destination, priceForElement, offersForElement, typeForElement, destinationNameForElement, dateBeginForElement, dateEndForElement } = _data;
+  const {
+    destination,
+    priceForElement,
+    offersForElement,
+    typeForElement,
+    destinationNameForElement,
+    dateBeginForElement,
+    dateEndForElement,
+  } = _data;
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
       <header class="event__header">
@@ -125,7 +131,7 @@ const createPointEditTemplate = (_data) => {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${typeForElement}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinationNameForElement}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(destinationNameForElement)}" list="destination-list-1">
           <datalist id="destination-list-1">
             <option value="Moscow"></option>
             <option value="London"></option>
@@ -324,6 +330,9 @@ class PointEditView extends SmartView {
     );
   };
 
+  /**
+   * Возвращает массив добавленных дополнительных опций
+   */
   #checkOffers = () => {
     const offerCheckboxes = this.element.querySelectorAll('.event__offer-checkbox');
     const checkedOffers = [];
@@ -347,7 +356,7 @@ class PointEditView extends SmartView {
       }
     }
     return offers;
-  }
+  };
 
   /**
    * Действия при нажатии кнопки Save (отправка формы)
@@ -366,8 +375,8 @@ class PointEditView extends SmartView {
   };
 
   /**
-  * Действия при нажатии кнопки Delete (удаление точки)
-  */
+   * Действия при нажатии кнопки Delete (удаление точки)
+   */
   #onDeleteClick = (evt) => {
     evt.preventDefault();
     this._callback.deleteClick(this._data);
