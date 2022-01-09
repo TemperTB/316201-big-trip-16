@@ -1,7 +1,7 @@
 import { createElement } from '../utils/render.js';
 
 /**
- * Абстрактный класс для создания остальных классов
+ * Абстрактный класс для создания остальных классов views
  */
 export default class AbstractView {
   #element = null;

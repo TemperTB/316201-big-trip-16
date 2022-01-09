@@ -40,5 +40,14 @@ const calcDiffBetweenDates = (dateEnd, dateBegin) => {
   }
 };
 
+/**
+ * Проверяет является ли дата окончания маршрута прошедшей датой
+ */
+const isDateEndPast = (dateEnd) => (dayjs() > dayjs(dateEnd));
 
-export { transformDate, calcDiffBetweenDates, getDate };
+/**
+ * Проверяет является ли дата начала маршрута будущей датой
+ */
+const isDateBeginFuture = (dateBegin) => dayjs() < dayjs(dateBegin);
+
+export { transformDate, calcDiffBetweenDates, getDate, isDateEndPast, isDateBeginFuture };

@@ -1,3 +1,4 @@
+import he from 'he';
 import { SmartView } from './smart-view.js';
 import { getDate } from '../utils/date.js';
 import { doFirstLetterUpperCase } from '../utils/common.js';
@@ -8,16 +9,32 @@ import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 /**
+ * Объект для добавления задачи
+ */
+const NEW_POINT = {
+  dateBegin: undefined,
+  dateEnd: undefined,
+  type: EVENT_TYPES[0],
+  destination: {
+    description: 'Здесь будет описание города',
+    name: 'Город',
+    pictures: [
+      {
+        description: 'Картинка',
+        src: 'http://picsum.photos/248/152?r=1',
+      },
+    ],
+  },
+  price: 0,
+  offers: OFFERS[0].offers,
+  isFavorite: false,
+};
+
+/**
  * Дополнительные опции
  * @param {Object[]} offers
  */
-const createOffersTemplate = (type, offers) => {
-  let thisType;
-  for (const offer of OFFERS) {
-    if (offer.type === type) {
-      thisType = offer;
-    }
-  }
+const createOffersTemplate = (thisType, offers) => {
   const addedOffers = [];
   for (const offer of offers) {
     addedOffers.push(offer.id);
@@ -27,12 +44,10 @@ const createOffersTemplate = (type, offers) => {
   for (let i = 0; i < thisType.offers.length; i++) {
     template += `
       <div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-${thisType.type}-${
+            <input class="event__offer-checkbox  visually-hidden" id="${thisType.offers[i].id}" type="checkbox" name="${
   thisType.offers[i].id
-}" type="checkbox" name="event-offer-${thisType.type}-${thisType.offers[i].id}" ${
-  addedOffers.includes(thisType.offers[i].id) ? 'checked' : ''
-}>
-            <label class="event__offer-label" for="event-offer-${thisType.type}-${thisType.offers[i].id}">
+}" ${addedOffers.includes(thisType.offers[i].id) ? 'checked' : ''}>
+            <label class="event__offer-label" for="${thisType.offers[i].id}">
               <span class="event__offer-title">${thisType.offers[i].title}</span>
               &plus;&euro;&nbsp;
               <span class="event__offer-price">${thisType.offers[i].price}</span>
@@ -40,6 +55,28 @@ const createOffersTemplate = (type, offers) => {
           </div>`;
   }
   return template;
+};
+
+/**
+ * Проверяет есть ли доп опции у данного типа путешествия.
+ * Если есть, отрисовывает для них блок.
+ */
+const createOffersSection = (typeForElement, offersForElement) => {
+  let offers;
+  for (const offer of OFFERS) {
+    if (offer.type === typeForElement) {
+      offers = offer;
+    }
+  }
+  if (offers.offers.length === 0) {
+    return '';
+  }
+  return `
+  <section class='event__section  event__section--offers'>
+    <h3 class='event__section-title  event__section-title--offers'>Offers</h3>
+
+    <div class='event__available-offers'>${createOffersTemplate(offers, offersForElement)}</div>
+  </section>`;
 };
 
 /**
@@ -63,8 +100,15 @@ const createEvenTypeItems = () => {
  * Разметка для формы изменения точки маршрута
  */
 const createPointEditTemplate = (_data) => {
-  const { destination, price, offers, typeForElement, destinationName, dateBeginForElement, dateEndForElement } =
-    _data;
+  const {
+    destination,
+    priceForElement,
+    offersForElement,
+    typeForElement,
+    destinationNameForElement,
+    dateBeginForElement,
+    dateEndForElement,
+  } = _data;
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
       <header class="event__header">
@@ -87,7 +131,7 @@ const createPointEditTemplate = (_data) => {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${typeForElement}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinationName}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(destinationNameForElement)}" list="destination-list-1">
           <datalist id="destination-list-1">
             <option value="Moscow"></option>
             <option value="London"></option>
@@ -104,12 +148,12 @@ const createPointEditTemplate = (_data) => {
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
           <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${getDate(
-    dateBeginForElement
+    dateBeginForElement,
   )}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">To</label>
           <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${getDate(
-    dateEndForElement
+    dateEndForElement,
   )}">
         </div>
 
@@ -118,7 +162,7 @@ const createPointEditTemplate = (_data) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${priceForElement}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -128,14 +172,7 @@ const createPointEditTemplate = (_data) => {
         </button>
       </header>
       <section class="event__details">
-        <section class="event__section  event__section--offers">
-          <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
-          <div class="event__available-offers">
-            ${createOffersTemplate(typeForElement, offers)}
-          </div>
-        </section>
-
+        ${createOffersSection(typeForElement, offersForElement)}
         <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
           <p class="event__destination-description">${destination.description}</p>
@@ -152,11 +189,12 @@ class PointEditView extends SmartView {
   #dateBeginPicker = null;
   #dateEndPicker = null;
 
-  constructor(point) {
+  constructor(point = NEW_POINT) {
     super();
     this._data = PointEditView.parsePointToData(point);
     this.#setOnInner();
     this.#setDatepicker();
+    this.#setOnPrice();
   }
 
   get template() {
@@ -179,6 +217,7 @@ class PointEditView extends SmartView {
     this.#setOnInner();
     this.setOnFormSubmit(this._callback.formSubmit);
     this.#setDatepicker();
+    this.#setOnPrice();
   };
 
   /**
@@ -208,11 +247,26 @@ class PointEditView extends SmartView {
   };
 
   /**
+   * Обработчик при нажатии кнопки Save (отправка формы)
+   */
+  setOnDeleteClick = (callback) => {
+    this._callback.deleteClick = callback;
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onDeleteClick);
+  };
+
+  /**
    * Обработчики для изменения типа точки маршрута и города назначения
    */
   #setOnInner = () => {
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#onDestinationNameChange);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#onTypeChange);
+  };
+
+  /**
+   * Обработчики для изменения типа точки маршрута и города назначения
+   */
+  #setOnPrice = () => {
+    this.element.querySelector('.event__input--price').addEventListener('change', this.#onPriceChange);
   };
 
   /**
@@ -222,7 +276,20 @@ class PointEditView extends SmartView {
     evt.preventDefault();
     this.updateData(
       {
-        destinationName: evt.target.value,
+        destinationNameForElement: evt.target.value,
+      },
+      true,
+    );
+  };
+
+  /**
+   * Действия при изменении цены
+   */
+  #onPriceChange = (evt) => {
+    evt.preventDefault();
+    this.updateData(
+      {
+        priceForElement: evt.target.value,
       },
       true,
     );
@@ -235,6 +302,7 @@ class PointEditView extends SmartView {
     evt.preventDefault();
     this.updateData({
       typeForElement: evt.target.value,
+      offersForElement: [],
     });
   };
 
@@ -242,18 +310,52 @@ class PointEditView extends SmartView {
    * Действия при изменении даты/время начала точки маршрута
    */
   #onDateBeginChange = ([userDate]) => {
-    this.updateData({
-      dateBeginForElement: userDate,
-    }, true);
+    this.updateData(
+      {
+        dateBeginForElement: userDate,
+      },
+      true,
+    );
   };
 
   /**
    * Действия при изменении даты/время окончания точки маршрута
    */
   #onDateEndChange = ([userDate]) => {
-    this.updateData({
-      dateEndForElement: userDate,
-    }, true);
+    this.updateData(
+      {
+        dateEndForElement: userDate,
+      },
+      true,
+    );
+  };
+
+  /**
+   * Возвращает массив добавленных дополнительных опций
+   */
+  #checkOffers = () => {
+    const offerCheckboxes = this.element.querySelectorAll('.event__offer-checkbox');
+    const checkedOffers = [];
+    for (const offerCheckbox of offerCheckboxes) {
+      if (offerCheckbox.checked) {
+        checkedOffers.push(offerCheckbox.id);
+      }
+    }
+
+    let currentOffer;
+    for (const offer of OFFERS) {
+      if (offer.type === this._data.typeForElement) {
+        currentOffer = offer;
+      }
+    }
+
+    const offers = [];
+    for (const offer of currentOffer.offers) {
+      if (checkedOffers.includes(offer.id)) {
+        offers.push(offer);
+      }
+    }
+    return offers;
   };
 
   /**
@@ -261,7 +363,23 @@ class PointEditView extends SmartView {
    */
   #onFormSubmit = (evt) => {
     evt.preventDefault();
-    this._callback.formSubmit(this._data);
+    const checkedOffers = this.#checkOffers();
+
+    this.updateData(
+      {
+        offersForElement: checkedOffers,
+      },
+      true,
+    );
+    this._callback.formSubmit(PointEditView.parseDataToPoint(this._data));
+  };
+
+  /**
+   * Действия при нажатии кнопки Delete (удаление точки)
+   */
+  #onDeleteClick = (evt) => {
+    evt.preventDefault();
+    this._callback.deleteClick(this._data);
   };
 
   /**
@@ -271,9 +389,11 @@ class PointEditView extends SmartView {
   static parsePointToData = (point) => ({
     ...point,
     typeForElement: point.type,
-    destinationName: point.destination.name,
+    destinationNameForElement: point.destination.name,
     dateBeginForElement: point.dateBegin,
     dateEndForElement: point.dateEnd,
+    priceForElement: point.price,
+    offersForElement: point.offers,
   });
 
   /**
@@ -283,14 +403,18 @@ class PointEditView extends SmartView {
     const point = { ...data };
 
     point.type = point.typeForElement;
-    point.destination.name = point.destinationName;
+    point.destination.name = point.destinationNameForElement;
     point.dateBegin = point.dateBeginForElement;
     point.dateEnd = point.dateEndForElement;
+    point.price = point.priceForElement;
+    point.offers = point.offersForElement;
 
     delete point.typeForElement;
-    delete point.destinationName;
+    delete point.destinationNameForElement;
     delete point.dateBeginForElement;
     delete point.dateEndForElement;
+    delete point.priceForElement;
+    delete point.offersForElement;
 
     return point;
   };
