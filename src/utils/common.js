@@ -29,18 +29,9 @@ const addZero = (number) => {
 const doFirstLetterUpperCase = (str) => str[0].toUpperCase() + str.slice(1);
 
 /**
- * Обновляет элемент в Map, при совпадении по ключу id.
- * @param {Map} items
- * @param {Object} update - элемент с обновленными данными
+ *Сравнивает два значения и возвращает true если они разные
  */
-const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
+const isDifferentValue = (firstValue, secondValue) => (firstValue !== secondValue);
 
-  if (index === -1) {
-    return items;
-  }
 
-  return [...items.slice(0, index), update, ...items.slice(index + 1)];
-};
-
-export { getRandomInteger, addZero, doFirstLetterUpperCase, updateItem };
+export { getRandomInteger, addZero, doFirstLetterUpperCase, isDifferentValue };

@@ -4,41 +4,75 @@ import { TripSortView } from '../view/trip-sort-view.js';
 import { PointListView } from '../view/point-list-view.js';
 import { EmptyTripView } from '../view/empty-trip-view.js';
 import { MainTripInfoView } from '../view/main-trip-info-view.js';
-import { renderElement, RenderPosition } from '../utils/render.js';
+import { renderElement, RenderPosition, removeComponent } from '../utils/render.js';
 import { PointPresenter } from './point-presenter.js';
-import { updateItem } from '../utils/common.js';
-import { sortPrice, sortTime } from '../utils/sort-points.js';
-import { SortType } from '../const.js';
+import { PointNewPresenter } from './point-new-presenter.js';
+import { sortDays, sortPrice, sortTime } from '../utils/sort-points.js';
+import { SortType, UserAction, UpdateType, FilterType } from '../const.js';
+import { filter } from '../utils/filter.js';
 
 const TripInfoContainer = document.querySelector('.trip-main');
 
+/**
+ * Презентер для доски путешествия
+ */
 class TripPresenter {
   #tripContainer = null;
   #tripInfoComponent = null;
+  #pointsModel = null;
+  #sortComponent = null;
+  #filterModel = null;
+  #emptyTripComponent = null;
+  #pointNewPresenter = null;
 
   #tripComponent = new TripView();
   #pointListComponent = new PointListView();
-  #emptyTripComponent = new EmptyTripView();
-  #sortComponent = new TripSortView();
 
-  #points = [];
   #pointPresenter = new Map();
-  #currentSortType = SortType.DEFAULT;
-  #sourcedPoints = [];
+  #currentSortType = SortType.DAYS;
+  #filterType = FilterType.EVERYTHING;
 
-  constructor(tripContainer) {
+  constructor(tripContainer, pointsModel, filterModel) {
     this.#tripContainer = tripContainer;
+    this.#pointsModel = pointsModel;
+    this.#filterModel = filterModel;
+    this.#pointNewPresenter = new PointNewPresenter(this.#pointListComponent, this.#handleViewAction);
+
+    this.#pointsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
+  }
+
+  get points() {
+    this.#filterType = this.#filterModel.filter;
+    const points = this.#pointsModel.points;
+    const filteredPoints = filter[this.#filterType](points);
+
+    switch (this.#currentSortType) {
+      case SortType.DAYS:
+        return filteredPoints.sort(sortDays);
+      case SortType.PRICE:
+        return filteredPoints.sort(sortPrice);
+      case SortType.TIME:
+        return filteredPoints.sort(sortTime);
+    }
+    return filteredPoints;
   }
 
   /**
    * Инициализация
    */
-  init = (points) => {
-    this.#points = [...points];
-    this.#sourcedPoints = [...points];
-
+  init = () => {
     renderElement(this.#tripContainer, this.#tripComponent, RenderPosition.BEFOREEND);
     this.#renderTrip();
+  };
+
+  /**
+   * Создание задачи
+   */
+  createTask = () => {
+    this.#currentSortType = SortType.DAYS;
+    this.#filterModel.setFilter(UpdateType.MINOR, FilterType.EVERYTHING);
+    this.#pointNewPresenter.init();
   };
 
   /**
@@ -46,40 +80,44 @@ class TripPresenter {
    * По ТЗ все остальные формы редактирования должны закрыться
    */
   #handleModeChange = () => {
+    this.#pointNewPresenter.destroy();
     this.#pointPresenter.forEach((presenter) => presenter.resetView());
   };
 
   /**
-   * Действия при изменении данных
+   * Вызов обновления модели при действиях пользователя
    */
-  #handlePointChange = (updatedPoint) => {
-    this.#points = updateItem(this.#points, updatedPoint);
-    this.#sourcedPoints = updateItem(this.#sourcedPoints, updatedPoint);
-    this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
-  };
-
-  /**
-   * Отрисовка пустого маршрута
-   */
-  #renderEmptyTrip = () => {
-    renderElement(this.#tripComponent, this.#emptyTripComponent, RenderPosition.BEFOREEND);
-  };
-
-  /**
-   * Сортировка точек маршрута
-   */
-  #sortPoints = (sortType) => {
-    switch (sortType) {
-      case SortType.PRICE:
-        this.#points.sort(sortPrice);
+  #handleViewAction = (actionType, updateType, update) => {
+    switch (actionType) {
+      case UserAction.UPDATE_POINT:
+        this.#pointsModel.updatePoint(updateType, update);
         break;
-      case SortType.TIME:
-        this.#points.sort(sortTime);
+      case UserAction.ADD_POINT:
+        this.#pointsModel.addPoint(updateType, update);
         break;
-      default:
-        this.#points = [...this.#sourcedPoints];
+      case UserAction.DELETE_POINT:
+        this.#pointsModel.deletePoint(updateType, update);
+        break;
     }
-    this.#currentSortType = sortType;
+  };
+
+  /**
+   * Изменения модели при действиях пользователя
+   */
+  #handleModelEvent = (updateType, data) => {
+    switch (updateType) {
+      case UpdateType.PATCH:
+        this.#pointPresenter.get(data.id).init(data);
+        break;
+      case UpdateType.MINOR:
+        this.#clearTrip();
+        this.#renderTrip();
+        break;
+      case UpdateType.MAJOR:
+        this.#clearTrip();
+        this.#renderTrip();
+        break;
+    }
   };
 
   /**
@@ -89,44 +127,33 @@ class TripPresenter {
     if (this.#currentSortType === sortType) {
       return;
     }
-    this.#sortPoints(sortType);
-    this.#clearPointList();
-    this.#renderPointList();
+    this.#currentSortType = sortType;
+    this.#clearTrip();
+    this.#renderTrip();
+  };
+
+  /**
+   * Отрисовка пустого маршрута
+   */
+  #renderEmptyTrip = () => {
+    this.#emptyTripComponent = new EmptyTripView(this.#filterType);
+    renderElement(this.#tripComponent, this.#emptyTripComponent, RenderPosition.BEFOREEND);
   };
 
   /**
    * Сортировка
    */
   #renderSort = () => {
-    renderElement(this.#tripComponent, this.#sortComponent, RenderPosition.BEFOREEND);
+    this.#sortComponent = new TripSortView(this.#currentSortType);
     this.#sortComponent.setOnSortTypeChange(this.#handleSortTypeChange);
-  };
-
-  /**
-   * Список точек маршрута
-   */
-  #renderPointList = () => {
-    renderElement(this.#tripComponent, this.#pointListComponent, RenderPosition.BEFOREEND);
-    this.#renderPoints(0, this.#points.length);
-  };
-
-  /**
-   * Очистка отрисованных точек маршрута
-   */
-  #clearPointList = () => {
-    this.#pointPresenter.forEach((presenter) => presenter.destroy());
-    this.#pointPresenter.clear();
+    renderElement(this.#tripComponent, this.#sortComponent, RenderPosition.BEFOREEND);
   };
 
   /**
    * Отрисовка точки маршрута
    */
   #renderPoint = (point) => {
-    const pointPresenter = new PointPresenter(
-      this.#pointListComponent,
-      this.#handlePointChange,
-      this.#handleModeChange,
-    );
+    const pointPresenter = new PointPresenter(this.#pointListComponent, this.#handleViewAction, this.#handleModeChange);
     pointPresenter.init(point);
     this.#pointPresenter.set(point.id, pointPresenter);
   };
@@ -134,31 +161,53 @@ class TripPresenter {
   /**
    * Отрисовка точек маршрута (от, до)
    */
-  #renderPoints = (from, to) => {
-    for (let i = 0; i < to; i++) {
-      this.#renderPoint(this.#points[i]);
-    }
+  #renderPoints = (points) => {
+    points.forEach((point) => this.#renderPoint(point));
   };
 
   /**
    * Отрисовка информации о путешествии
    */
   #renderTripInfo = () => {
-    this.#tripInfoComponent = new MainTripInfoView(this.#points);
+    this.#tripInfoComponent = new MainTripInfoView(this.points);
     renderElement(TripInfoContainer, this.#tripInfoComponent, RenderPosition.BEFOREEND);
+  };
+
+  /**
+   * Очистка путешествия
+   */
+  #clearTrip = (resetSortType = false) => {
+    this.#pointNewPresenter.destroy();
+    this.#pointPresenter.forEach((presenter) => presenter.destroy());
+    this.#pointPresenter.clear();
+
+    if (this.#emptyTripComponent) {
+      removeComponent(this.#emptyTripComponent);
+    }
+    removeComponent(this.#tripInfoComponent);
+    removeComponent(this.#sortComponent);
+
+    if (resetSortType) {
+      this.#currentSortType = SortType.DAYS;
+    }
   };
 
   /**
    * Отрисовка путешествия
    */
   #renderTrip = () => {
-    if (this.#points.length === 0) {
+
+    this.#renderTripInfo();
+    this.#renderSort();
+    const points = this.points;
+    const pointsCount = points.length;
+
+    renderElement(this.#tripComponent, this.#pointListComponent, RenderPosition.BEFOREEND);
+    if (pointsCount === 0) {
       this.#renderEmptyTrip();
       return;
     }
-    this.#renderTripInfo();
-    this.#renderSort();
-    this.#renderPointList();
+    this.#renderPoints(this.points);
   };
 }
 

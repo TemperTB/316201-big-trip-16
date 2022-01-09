@@ -1,4 +1,14 @@
 /**
+ * Сортировка по времени начала события
+ */
+const sortDays = (pointA, pointB) => {
+  if (pointA.dateBegin >= pointB.dateBegin) {
+    return -1;
+  }
+  return 1;
+};
+
+/**
  * Сортировка по стоимости (от большего к меньшему)
  */
 const sortPrice = (pointA, pointB) => {
@@ -20,4 +30,4 @@ const sortTime = (pointA, pointB) => {
   return 1;
 };
 
-export { sortPrice, sortTime };
+export { sortDays, sortPrice, sortTime };

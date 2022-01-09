@@ -3,10 +3,38 @@ const EVENT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-i
 /**
  * Типы сортировки
  */
-export const SortType = {
+const SortType = {
   DEFAULT: 'default',
+  DAYS: 'days',
   TIME: 'time',
   PRICE: 'price',
 };
 
-export { EVENT_TYPES };
+/**
+ * Список фильтров
+ */
+export const FilterType = {
+  EVERYTHING: 'everything',
+  PAST: 'past',
+  FUTURE: 'future',
+};
+
+/**
+ * Действия пользователя
+ */
+const UserAction = {
+  UPDATE_POINT: 'UPDATE_POINT',
+  ADD_POINT: 'ADD_POINT',
+  DELETE_POINT: 'DELETE_POINT',
+};
+
+/**
+ * Тип обновления
+ */
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
+export { EVENT_TYPES, SortType, UserAction, UpdateType };

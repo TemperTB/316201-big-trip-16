@@ -62,7 +62,7 @@ const generateDestination = () => {
   for (let i = 0; i < CITIES.length; i++) {
     DESTINATIONS[i] = {};
     DESTINATIONS[i].description = generateDescription();
-    DESTINATIONS[i].name = CITIES[getRandomInteger(0, CITIES.length - 1)];
+    DESTINATIONS[i].name = CITIES[i];
     DESTINATIONS[i].pictures = generatePictures();
   }
 };
