@@ -13,13 +13,9 @@ class FilterPresenter {
     this.#filterContainer = filterContainer;
     this.#filterModel = filterModel;
     this.#pointsModel = pointsModel;
-
-    this.#pointsModel.addObserver(this.#OnModelEvent);
-    this.#filterModel.addObserver(this.#OnModelEvent);
   }
 
   get filters() {
-
     return [
       {
         type: FilterType.EVERYTHING,
@@ -43,6 +39,9 @@ class FilterPresenter {
     this.#filterComponent = new TripFiltersView(filters, this.#filterModel.filter);
     this.#filterComponent.setOnFilterChange(this.#OnFilterChange);
 
+    this.#pointsModel.addObserver(this.#OnModelEvent);
+    this.#filterModel.addObserver(this.#OnModelEvent);
+
     if (prevFilterComponent === null) {
       renderElement(this.#filterContainer, this.#filterComponent, RenderPosition.BEFOREEND);
       return;
@@ -50,6 +49,16 @@ class FilterPresenter {
 
     replaceElements(this.#filterComponent, prevFilterComponent);
     removeComponent(prevFilterComponent);
+  };
+
+  destroy = () => {
+    removeComponent(this.#filterComponent);
+    this.#filterComponent = null;
+
+    this.#pointsModel.removeObserver(this.#OnModelEvent);
+    this.#filterModel.removeObserver(this.#OnModelEvent);
+
+    this.#filterModel.setFilter(UpdateType.MINOR, FilterType.EVERYTHING);
   };
 
   #OnModelEvent = () => {

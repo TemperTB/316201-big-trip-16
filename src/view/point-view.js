@@ -1,6 +1,6 @@
 import he from 'he';
 import AbstractView from './abstract-view.js';
-import { transformDate, calcDiffBetweenDates } from '../utils/date.js';
+import { transformDate, calcDiffBetweenDates, calcDuration } from '../utils/date.js';
 
 /**
  * Дополнительные опции
@@ -50,7 +50,7 @@ const createPointTemplate = (point) => {
   'HH:mm',
 )}</time>
         </p>
-        <p class="event__duration">${calcDiffBetweenDates(dateEnd, dateBegin)}</p>
+        <p class="event__duration">${calcDuration(calcDiffBetweenDates(dateEnd, dateBegin))}</p>
       </div>
       <p class="event__price">
         &euro;&nbsp;<span class="event__price-value">${price}</span>
