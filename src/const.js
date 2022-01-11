@@ -37,4 +37,9 @@ const UpdateType = {
   MAJOR: 'MAJOR',
 };
 
-export { EVENT_TYPES, SortType, UserAction, UpdateType };
+const MenuItem = {
+  TABLE: 'TABLE',
+  STATS: 'STATS',
+};
+
+export { EVENT_TYPES, SortType, UserAction, UpdateType, MenuItem };
