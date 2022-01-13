@@ -32,14 +32,14 @@ class PointPresenter {
   /**
    * Инициализация
    */
-  init = (point) => {
+  init = (point, offers) => {
     this.#point = point;
 
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
 
     this.#pointComponent = new PointView(point);
-    this.#pointEditComponent = new PointEditView(point);
+    this.#pointEditComponent = new PointEditView(point, offers);
 
     this.#pointComponent.setOnEditClick(this.#onEditClick);
     this.#pointEditComponent.setOnFormSubmit(this.#onFormSubmit);
@@ -95,7 +95,7 @@ class PointPresenter {
   #replaceCardToForm = () => {
     replaceElements(this.#pointEditComponent, this.#pointComponent);
     document.addEventListener('keydown', this.#onEscKeyDown);
-    document.querySelector('.event__rollup-btn').addEventListener('click', this.#onCloseEditClick);
+    this.#pointEditComponent.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onCloseEditClick);
     this.#changeMode();
     this.#mode = Mode.EDITING;
   };
@@ -106,7 +106,7 @@ class PointPresenter {
   #replaceFormToCard = () => {
     replaceElements(this.#pointComponent, this.#pointEditComponent);
     document.removeEventListener('keydown', this.#onEscKeyDown);
-    document.querySelector('.event__rollup-btn').removeEventListener('click', this.#onCloseEditClick);
+    this.#pointEditComponent.element.querySelector('.event__rollup-btn').removeEventListener('click', this.#onCloseEditClick);
     this.#mode = Mode.DEFAULT;
   };
 

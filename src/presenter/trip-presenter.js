@@ -10,6 +10,7 @@ import { PointNewPresenter } from './point-new-presenter.js';
 import { sortDays, sortPrice, sortTime } from '../utils/sort-points.js';
 import { SortType, UserAction, UpdateType, FilterType } from '../const.js';
 import { filter } from '../utils/filter.js';
+import { LoadingView } from '../view/loading-view.js';
 
 const TripInfoContainer = document.querySelector('.trip-main');
 
@@ -19,23 +20,27 @@ const TripInfoContainer = document.querySelector('.trip-main');
 class TripPresenter {
   #tripContainer = null;
   #tripInfoComponent = null;
-  #pointsModel = null;
   #sortComponent = null;
-  #filterModel = null;
   #emptyTripComponent = null;
+  #pointsModel = null;
+  #filterModel = null;
+  #offersModel = null;
   #pointNewPresenter = null;
 
   #tripComponent = new TripView();
   #pointListComponent = new PointListView();
+  #loadingComponent = new LoadingView();
 
   #pointPresenter = new Map();
   #currentSortType = SortType.DAYS;
   #filterType = FilterType.EVERYTHING;
+  #isLoading = true;
 
-  constructor(tripContainer, pointsModel, filterModel) {
+  constructor(tripContainer, pointsModel, filterModel, offersModel) {
     this.#tripContainer = tripContainer;
     this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;
+    this.#offersModel = offersModel;
     this.#pointNewPresenter = new PointNewPresenter(this.#pointListComponent, this.#handleViewAction);
   }
 
@@ -86,12 +91,11 @@ class TripPresenter {
   createTask = () => {
     this.#currentSortType = SortType.DAYS;
     this.#filterModel.setFilter(UpdateType.MINOR, FilterType.EVERYTHING);
-    this.#pointNewPresenter.init();
+    this.#pointNewPresenter.init(this.#offersModel.offers);
   };
 
   /**
    * Действие при изменении режима отображения точки маршрута
-   * По ТЗ все остальные формы редактирования должны закрыться
    */
   #handleModeChange = () => {
     this.#pointNewPresenter.destroy();
@@ -121,7 +125,7 @@ class TripPresenter {
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
-        this.#pointPresenter.get(data.id).init(data);
+        this.#pointPresenter.get(data.id).init(data, this.#offersModel.offers);
         break;
       case UpdateType.MINOR:
         this.#clearTrip();
@@ -129,6 +133,11 @@ class TripPresenter {
         break;
       case UpdateType.MAJOR:
         this.#clearTrip();
+        this.#renderTrip();
+        break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        removeComponent(this.#loadingComponent);
         this.#renderTrip();
         break;
     }
@@ -144,6 +153,13 @@ class TripPresenter {
     this.#currentSortType = sortType;
     this.#clearTrip();
     this.#renderTrip();
+  };
+
+  /**
+   * Отрисовка загрузки
+   */
+  #renderLoading = () => {
+    renderElement(this.#tripComponent, this.#loadingComponent, RenderPosition.BEFOREEND);
   };
 
   /**
@@ -168,7 +184,7 @@ class TripPresenter {
    */
   #renderPoint = (point) => {
     const pointPresenter = new PointPresenter(this.#pointListComponent, this.#handleViewAction, this.#handleModeChange);
-    pointPresenter.init(point);
+    pointPresenter.init(point, this.#offersModel.offers);
     this.#pointPresenter.set(point.id, pointPresenter);
   };
 
@@ -200,6 +216,7 @@ class TripPresenter {
     }
     removeComponent(this.#tripInfoComponent);
     removeComponent(this.#sortComponent);
+    removeComponent(this.#loadingComponent);
 
     if (resetSortType) {
       this.#currentSortType = SortType.DAYS;
@@ -210,6 +227,11 @@ class TripPresenter {
    * Отрисовка путешествия
    */
   #renderTrip = () => {
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     this.#renderTripInfo();
     this.#renderSort();
     const points = this.points;
