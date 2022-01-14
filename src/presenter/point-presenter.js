@@ -150,8 +150,10 @@ class PointPresenter {
    * Действия при сохранении формы редактирования
    */
   #onClickSave = (point) => {
-    const isMinorUpdate =
-      isDifferentValue(this.#point.dateBegin, point.dateBegin) || isDifferentValue(this.#point.price, point.price);
+    let  isMinorUpdate = false;
+    if (isDifferentValue(this.#point.dateBegin, point.dateBegin) || isDifferentValue(this.#point.price, point.price) || this.#point.offers !== point.offers) {
+      isMinorUpdate = true;
+    }
     this.#changeData(UserAction.UPDATE_POINT, isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH, point);
     this.#replaceFormToCard();
   };

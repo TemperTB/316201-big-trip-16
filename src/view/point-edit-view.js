@@ -42,7 +42,7 @@ const createOffersTemplate = (allOffersFotThisType, offers) => {
  * Если есть, отрисовывает для них блок.
  */
 const createOffersSection = (typeForElement, offersForElement, allOffers) => {
-  let allOffersFotThisType;
+  let allOffersFotThisType = [];
   for (let i = 0 ; i < allOffers.length; i++) {
     if (allOffers[i].type === typeForElement) {
       allOffersFotThisType = allOffers[i].offers;
@@ -380,6 +380,12 @@ class PointEditView extends SmartView {
    */
   #checkOffers = () => {
     const offerCheckboxes = this.element.querySelectorAll('.event__offer-checkbox');
+
+    // Если блок с доп. услугами не загрузился, то при нажатии кнопки save проверять изменения в доп. услугах нет смысла, пользователь не мог их поменять
+    if (this._offers.length === 0) {
+      return this._data.offers;
+    }
+
     const checkedOffers = [];
     for (const offerCheckbox of offerCheckboxes) {
       if (offerCheckbox.checked) {

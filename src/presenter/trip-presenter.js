@@ -62,6 +62,13 @@ class TripPresenter {
     return filteredPoints;
   }
 
+  get pointsForInfo() {
+
+    const points = this.#pointsModel.points;
+    return points.sort(sortDays);
+
+  }
+
   /**
    * Инициализация
    */
@@ -201,7 +208,7 @@ class TripPresenter {
    * Отрисовка информации о путешествии
    */
   #renderTripInfo = () => {
-    this.#tripInfoComponent = new MainTripInfoView(this.points);
+    this.#tripInfoComponent = new MainTripInfoView(this.pointsForInfo);
     renderElement(TripInfoContainer, this.#tripInfoComponent, RenderPosition.BEFOREEND);
   };
 

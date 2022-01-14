@@ -1,5 +1,6 @@
 import { PointEditView } from '../view/point-edit-view.js';
 import { nanoid } from 'nanoid';
+import { getDate } from '../utils/date.js';
 import { removeComponent, renderElement, RenderPosition } from '../utils/render.js';
 import { UserAction, UpdateType } from '../const.js';
 
@@ -7,8 +8,8 @@ import { UserAction, UpdateType } from '../const.js';
  * Объект для добавления задачи
  */
 const NEW_POINT = {
-  dateBegin: undefined,
-  dateEnd: undefined,
+  dateBegin: getDate(),
+  dateEnd: getDate(),
   type: undefined,
   destination: {
     description: '',
@@ -40,7 +41,8 @@ class PointNewPresenter {
     }
 
     this.#pointEditComponent = new PointEditView(NEW_POINT, this.#offers, this.#destinations);
-    this.#pointEditComponent.setOnFormSubmit(this.#onFormSubmit);
+    this.#pointEditComponent.setOnClickSave(this.#onClickSave);
+    this.#pointEditComponent.setOnFormSubmit();
     this.#pointEditComponent.setOnDeleteClick(this.#onDeleteClick);
     this.#pointEditComponent.element
       .querySelector('.event__rollup-btn')
@@ -49,7 +51,6 @@ class PointNewPresenter {
     renderElement(this.#pointListContainer, this.#pointEditComponent, RenderPosition.AFTERBEGIN);
 
     document.addEventListener('keydown', this.#onEscKeyDown);
-
   };
 
   destroy = () => {
@@ -66,7 +67,7 @@ class PointNewPresenter {
     this.#pointEditComponent = null;
   };
 
-  #onFormSubmit = (point) => {
+  #onClickSave = (point) => {
     this.#changeData(UserAction.ADD_POINT, UpdateType.MINOR, { id: nanoid(), ...point });
     this.destroy();
   };

@@ -19,6 +19,7 @@ class OffersModel extends AbstractObservable {
 
   #init = async () => {
     try {
+      this.#offers = [];
       this.#offers = await this.#apiService.offers;
     } catch (err) {
       this.#offers = [];
