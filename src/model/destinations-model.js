@@ -19,7 +19,7 @@ class DestinationsModel extends AbstractObservable {
 
   #init = async () => {
     try {
-      // this.#destinations = [];
+      this.#destinations = [];
       this.#destinations = await this.#apiService.destinations;
     } catch (err) {
       this.#destinations = [];

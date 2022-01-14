@@ -311,7 +311,7 @@ class PointEditView extends SmartView {
     evt.preventDefault();
     const newDestinationName =  evt.target.value;
     let newDestination = {
-      name: '',
+      name: newDestinationName,
       description: undefined,
       pictures: [],
     };
