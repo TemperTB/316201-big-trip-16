@@ -464,7 +464,7 @@ class PointEditView extends SmartView {
     point.destination = point.destinationForElement;
     point.dateBegin = point.dateBeginForElement;
     point.dateEnd = point.dateEndForElement;
-    point.price = point.priceForElement;
+    point.price = +point.priceForElement;
     point.offers = point.offersForElement;
 
     delete point.typeForElement;

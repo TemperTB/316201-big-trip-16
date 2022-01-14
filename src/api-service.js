@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 const Method = {
   GET: 'GET',
   PUT: 'PUT',
@@ -63,13 +65,13 @@ class ApiService {
     const adaptedPoint = {
       ...point,
       // eslint-disable-next-line camelcase
-      date_from: point.dateBegin instanceof Date ? point.dateBegin.toISOString() : null,
+      date_from: point.dateBegin instanceof dayjs ? point.dateBegin.toISOString() : null,
       // eslint-disable-next-line camelcase
-      date_to: point.dateEnd instanceof Date ? point.dateEnd.toISOString() : null,
+      date_to: point.dateEnd instanceof dayjs ? point.dateEnd.toISOString() : null,
       // eslint-disable-next-line camelcase
       is_favorite: point.isFavorite,
       // eslint-disable-next-line camelcase
-      base_price: point.price,
+      base_price: +point.price,
     };
 
     // Ненужные ключи мы удаляем
@@ -77,7 +79,6 @@ class ApiService {
     delete adaptedPoint.dateEnd;
     delete adaptedPoint.isFavorite;
     delete adaptedPoint.price;
-
     return adaptedPoint;
   };
 

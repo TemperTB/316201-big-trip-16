@@ -50,14 +50,15 @@ const onSiteMenuClick = (menuItem) => {
       break;
   }
 };
-siteMenuComponent.setOnMenuClick(onSiteMenuClick);
 
 document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
   evt.preventDefault();
   tripPresenter.createTask();
 });
 
-renderElement(menuContainer, siteMenuComponent, RenderPosition.BEFOREEND);
 filterPresenter.init();
 tripPresenter.init();
-pointsModel.init();
+pointsModel.init().finally(() => {
+  renderElement(menuContainer, siteMenuComponent, RenderPosition.BEFOREEND);
+  siteMenuComponent.setOnMenuClick(onSiteMenuClick);
+});
