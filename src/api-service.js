@@ -20,6 +20,10 @@ class ApiService {
     return this.#load({ url: 'offers' }).then(ApiService.parseResponse);
   }
 
+  get destinations() {
+    return this.#load({ url: 'destinations' }).then(ApiService.parseResponse);
+  }
+
   updatePoint = async (point) => {
     const response = await this.#load({
       url: `points/${point.id}`,
@@ -49,9 +53,13 @@ class ApiService {
   #adaptToServer = (point) => {
     const adaptedPoint = {
       ...point,
+      // eslint-disable-next-line camelcase
       date_from: point.dateBegin instanceof Date ? point.dateBegin.toISOString() : null,
+      // eslint-disable-next-line camelcase
       date_to: point.dateEnd instanceof Date ? point.dateEnd.toISOString() : null,
+      // eslint-disable-next-line camelcase
       is_favorite: point.isFavorite,
+      // eslint-disable-next-line camelcase
       base_price: point.price,
     };
 

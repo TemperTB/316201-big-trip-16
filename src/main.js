@@ -4,6 +4,7 @@ import { TripPresenter } from './presenter/trip-presenter.js';
 import { FilterPresenter } from './presenter/filter-presenter.js';
 import { PointsModel } from './model/points-model.js';
 import { OffersModel} from './model/offers-model.js';
+import { DestinationsModel } from './model/destinations-model.js';
 import { FilterModel } from './model/filter-model.js';
 import { StatsView } from './view/stats-view.js';
 import { MenuItem } from './const.js';
@@ -19,9 +20,9 @@ const tripContainer = document.querySelector('.page-body__page-main').querySelec
 const filterModel = new FilterModel();
 const pointsModel = new PointsModel(new ApiService(END_POINT, AUTHORIZATION));
 const offersModel = new OffersModel(new ApiService(END_POINT, AUTHORIZATION));
-
+const destinationsModel = new DestinationsModel(new ApiService(END_POINT, AUTHORIZATION));
 const filterPresenter = new FilterPresenter(filterContainer, filterModel, pointsModel);
-const tripPresenter = new TripPresenter(tripContainer, pointsModel, filterModel, offersModel);
+const tripPresenter = new TripPresenter(tripContainer, pointsModel, filterModel, offersModel, destinationsModel);
 
 const siteMenuComponent = new TripTabsView();
 

@@ -20,6 +20,8 @@ const NEW_POINT = {
   isFavorite: false,
 };
 class PointNewPresenter {
+  #offers = null;
+  #destinations = null;
   #pointListContainer = null;
   #changeData = null;
   #pointEditComponent = null;
@@ -29,13 +31,15 @@ class PointNewPresenter {
     this.#changeData = changeData;
   }
 
-  init = (offers) => {
+  init = (offers, destinations) => {
+    this.#offers = offers;
+    this.#destinations = destinations;
     NEW_POINT.type = offers[0].type;
     if (this.#pointEditComponent !== null) {
       return;
     }
 
-    this.#pointEditComponent = new PointEditView(NEW_POINT, offers);
+    this.#pointEditComponent = new PointEditView(NEW_POINT, this.#offers, this.#destinations);
     this.#pointEditComponent.setOnFormSubmit(this.#onFormSubmit);
     this.#pointEditComponent.setOnDeleteClick(this.#onDeleteClick);
     this.#pointEditComponent.element

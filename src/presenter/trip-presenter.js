@@ -25,6 +25,7 @@ class TripPresenter {
   #pointsModel = null;
   #filterModel = null;
   #offersModel = null;
+  #destinationsModel = null;
   #pointNewPresenter = null;
 
   #tripComponent = new TripView();
@@ -36,11 +37,12 @@ class TripPresenter {
   #filterType = FilterType.EVERYTHING;
   #isLoading = true;
 
-  constructor(tripContainer, pointsModel, filterModel, offersModel) {
+  constructor(tripContainer, pointsModel, filterModel, offersModel, destinationsModel) {
     this.#tripContainer = tripContainer;
     this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;
     this.#offersModel = offersModel;
+    this.#destinationsModel = destinationsModel;
     this.#pointNewPresenter = new PointNewPresenter(this.#pointListComponent, this.#handleViewAction);
   }
 
@@ -91,7 +93,7 @@ class TripPresenter {
   createTask = () => {
     this.#currentSortType = SortType.DAYS;
     this.#filterModel.setFilter(UpdateType.MINOR, FilterType.EVERYTHING);
-    this.#pointNewPresenter.init(this.#offersModel.offers);
+    this.#pointNewPresenter.init(this.#offersModel.offers, this.#destinationsModel.destinations);
   };
 
   /**
@@ -125,7 +127,7 @@ class TripPresenter {
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
-        this.#pointPresenter.get(data.id).init(data, this.#offersModel.offers);
+        this.#pointPresenter.get(data.id).init(data, this.#offersModel.offers, this.#destinationsModel.destinations);
         break;
       case UpdateType.MINOR:
         this.#clearTrip();
@@ -184,7 +186,7 @@ class TripPresenter {
    */
   #renderPoint = (point) => {
     const pointPresenter = new PointPresenter(this.#pointListComponent, this.#handleViewAction, this.#handleModeChange);
-    pointPresenter.init(point, this.#offersModel.offers);
+    pointPresenter.init(point, this.#offersModel.offers, this.#destinationsModel.destinations);
     this.#pointPresenter.set(point.id, pointPresenter);
   };
 

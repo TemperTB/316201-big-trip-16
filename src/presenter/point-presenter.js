@@ -21,6 +21,8 @@ class PointPresenter {
   #pointEditComponent = null;
 
   #point = null;
+  #offers = null;
+  #destinations = null;
   #mode = Mode.DEFAULT;
 
   constructor(pointListContainer, changeData, changeMode) {
@@ -32,17 +34,20 @@ class PointPresenter {
   /**
    * Инициализация
    */
-  init = (point, offers) => {
+  init = (point, offers, destinations) => {
     this.#point = point;
+    this.#offers = offers;
+    this.#destinations = destinations;
 
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
 
     this.#pointComponent = new PointView(point);
-    this.#pointEditComponent = new PointEditView(point, offers);
+    this.#pointEditComponent = new PointEditView(point, this.#offers, this.#destinations);
 
     this.#pointComponent.setOnEditClick(this.#onEditClick);
-    this.#pointEditComponent.setOnFormSubmit(this.#onFormSubmit);
+    this.#pointEditComponent.setOnClickSave(this.#onClickSave);
+    this.#pointEditComponent.setOnFormSubmit();
     this.#pointComponent.setOnFavoriteClick(this.#onFavoriteClick);
     this.#pointEditComponent.setOnDeleteClick(this.#onDeleteClick);
 
@@ -95,7 +100,9 @@ class PointPresenter {
   #replaceCardToForm = () => {
     replaceElements(this.#pointEditComponent, this.#pointComponent);
     document.addEventListener('keydown', this.#onEscKeyDown);
-    this.#pointEditComponent.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onCloseEditClick);
+    this.#pointEditComponent.element
+      .querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#onCloseEditClick);
     this.#changeMode();
     this.#mode = Mode.EDITING;
   };
@@ -106,7 +113,9 @@ class PointPresenter {
   #replaceFormToCard = () => {
     replaceElements(this.#pointComponent, this.#pointEditComponent);
     document.removeEventListener('keydown', this.#onEscKeyDown);
-    this.#pointEditComponent.element.querySelector('.event__rollup-btn').removeEventListener('click', this.#onCloseEditClick);
+    this.#pointEditComponent.element
+      .querySelector('.event__rollup-btn')
+      .removeEventListener('click', this.#onCloseEditClick);
     this.#mode = Mode.DEFAULT;
   };
 
@@ -129,8 +138,8 @@ class PointPresenter {
   };
 
   /**
-  * Действие при клике на стрелку для закрытия формы редактирования
-  */
+   * Действие при клике на стрелку для закрытия формы редактирования
+   */
   #onCloseEditClick = () => {
     this.#pointEditComponent.reset(this.#point);
     this.#replaceFormToCard();
@@ -140,10 +149,9 @@ class PointPresenter {
    *
    * Действия при сохранении формы редактирования
    */
-  #onFormSubmit = (point) => {
+  #onClickSave = (point) => {
     const isMinorUpdate =
-      isDifferentValue(this.#point.dateBegin, point.dateBegin) ||
-      isDifferentValue(this.#point.price, point.price);
+      isDifferentValue(this.#point.dateBegin, point.dateBegin) || isDifferentValue(this.#point.price, point.price);
     this.#changeData(UserAction.UPDATE_POINT, isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH, point);
     this.#replaceFormToCard();
   };
@@ -162,8 +170,7 @@ class PointPresenter {
    * Действие при клике на кнопку удалить
    */
   #onDeleteClick = (point) => {
-    this.#changeData(UserAction.DELETE_POINT, UpdateType.MAJOR
-      , point);
+    this.#changeData(UserAction.DELETE_POINT, UpdateType.MAJOR, point);
   };
 }
 
