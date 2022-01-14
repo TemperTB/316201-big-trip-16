@@ -1,3 +1,6 @@
+/**
+ * Типы точки маршрута
+ */
 const EVENT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 
 /**
@@ -38,6 +41,9 @@ const UpdateType = {
   INIT: 'INIT',
 };
 
+/**
+ * Пункты меню
+ */
 const MenuItem = {
   TABLE: 'TABLE',
   STATS: 'STATS',

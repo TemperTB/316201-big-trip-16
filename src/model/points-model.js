@@ -41,12 +41,18 @@ class PointsModel extends AbstractObservable {
     this._notify(updateType, update);
   };
 
+  /**
+   * Добавление точки
+   */
   addPoint = (updateType, update) => {
     this.#points = [update, ...this.#points];
 
     this._notify(updateType, update);
   };
 
+  /**
+   * Удаление точки
+   */
   deletePoint = (updateType, update) => {
     const index = this.#points.findIndex((point) => point.id === update.id);
 
@@ -59,6 +65,9 @@ class PointsModel extends AbstractObservable {
     this._notify(updateType);
   };
 
+  /**
+   * Перевод данных с бэкенда на фронт
+   */
   #adaptToClient = (point) => {
     const adaptedPoint = {
       ...point,

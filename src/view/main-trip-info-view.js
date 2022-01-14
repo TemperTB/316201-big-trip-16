@@ -7,7 +7,9 @@ const CITY_NAME = 'name';
 const DATE_BEGIN = 'dateBegin';
 const DATE_END = 'dateEnd';
 
-
+/**
+ * Разметка для названий городов в блоке общей информации о путешествии
+ */
 const createTripTitle = (cities) => {
   switch (cities.length) {
     case 1:

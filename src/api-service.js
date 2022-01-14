@@ -24,6 +24,9 @@ class ApiService {
     return this.#load({ url: 'destinations' }).then(ApiService.parseResponse);
   }
 
+  /**
+   * Обновление данных на сервере
+   */
   updatePoint = async (point) => {
     const response = await this.#load({
       url: `points/${point.id}`,
@@ -37,6 +40,9 @@ class ApiService {
     return parsedResponse;
   };
 
+  /**
+   * Загрузка данных с сервера
+   */
   #load = async ({ url, method = Method.GET, body = null, headers = new Headers() }) => {
     headers.append('Authorization', this.#authorization);
 
@@ -50,6 +56,9 @@ class ApiService {
     }
   };
 
+  /**
+   * Переход с данных фронта на бэкенд
+   */
   #adaptToServer = (point) => {
     const adaptedPoint = {
       ...point,
@@ -72,6 +81,9 @@ class ApiService {
     return adaptedPoint;
   };
 
+  /**
+   * Перевод в JSON
+   */
   static parseResponse = (response) => response.json();
 
   static checkStatus = (response) => {

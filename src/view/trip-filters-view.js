@@ -41,11 +41,17 @@ class TripFiltersView extends AbstractView {
     return createTripFiltersTemplate(this.#filters, this.#currentFilter);
   }
 
+  /**
+   * Добавление обработчика на изменение фильтра
+   */
   setOnFilterChange = (callback) => {
     this._callback.filterChange = callback;
     this.element.addEventListener('change', this.#onFilterChange);
   };
 
+  /**
+   * Действия при изменении фильтра
+   */
   #onFilterChange = (evt) => {
     evt.preventDefault();
     this._callback.filterChange(evt.target.value);

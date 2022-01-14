@@ -3,7 +3,7 @@ import { TripTabsView } from './view/trip-tabs-view.js';
 import { TripPresenter } from './presenter/trip-presenter.js';
 import { FilterPresenter } from './presenter/filter-presenter.js';
 import { PointsModel } from './model/points-model.js';
-import { OffersModel} from './model/offers-model.js';
+import { OffersModel } from './model/offers-model.js';
 import { DestinationsModel } from './model/destinations-model.js';
 import { FilterModel } from './model/filter-model.js';
 import { StatsView } from './view/stats-view.js';
@@ -61,6 +61,3 @@ renderElement(menuContainer, siteMenuComponent, RenderPosition.BEFOREEND);
 filterPresenter.init();
 tripPresenter.init();
 pointsModel.init();
-
-//TODO JSDOC, сделать destinations
-

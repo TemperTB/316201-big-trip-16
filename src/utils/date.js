@@ -44,10 +44,9 @@ const calcDuration = (value) => {
 
 
 /**
- * Вычисляет разницу между датой окончания и датой начала и выводит в нужном формате
+ * Вычисляет разницу между датой окончания и датой начала
  * @param {Date} dateEnd - дата окончания
  * @param {Date} dateBegin - дата начала
- * @example 01D 02H 30M
  */
 const calcDiffBetweenDates = (dateEnd, dateBegin) => {
   const diff = dayjs(dateEnd).diff(dayjs(dateBegin));
