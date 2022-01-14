@@ -36,18 +36,18 @@ class PointsModel extends AbstractObservable {
       throw new Error('Can\'t update unexisting task');
     }
 
-    // try {
-    //   const response = await this.#apiService.updatePoint(update);
-    //   const updatedPoint = this.#adaptToClient(response);
-    //   this.#points = [...this.#points.slice(0, index), updatedPoint, ...this.#points.slice(index + 1)];
-    //   this._notify(updateType, updatedPoint);
-    // } catch (err) {
-    //   throw new Error('Can\'t update task');
-    // }
+    try {
+      const response = await this.#apiService.updatePoint(update);
+      const updatedPoint = this.#adaptToClient(response);
+      this.#points = [...this.#points.slice(0, index), updatedPoint, ...this.#points.slice(index + 1)];
+      this._notify(updateType, updatedPoint);
+    } catch (err) {
+      throw new Error('Can\'t update task');
+    }
 
-    this.#points = [...this.#points.slice(0, index), update, ...this.#points.slice(index + 1)];
+    // this.#points = [...this.#points.slice(0, index), update, ...this.#points.slice(index + 1)];
 
-    this._notify(updateType, update);
+    // this._notify(updateType, update);
   };
 
   /**
