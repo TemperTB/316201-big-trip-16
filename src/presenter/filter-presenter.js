@@ -2,6 +2,9 @@ import { TripFiltersView } from '../view/trip-filters-view.js';
 import { renderElement, RenderPosition, replaceElements, removeComponent } from '../utils/render.js';
 import { FilterType, UpdateType } from '../const.js';
 
+/**
+ * Презентер для фильтрации
+ */
 class FilterPresenter {
   #filterContainer = null;
   #filterModel = null;
@@ -61,10 +64,16 @@ class FilterPresenter {
     this.#filterModel.setFilter(UpdateType.MINOR, FilterType.EVERYTHING);
   };
 
+  /**
+   * Действия при изменении в модели
+   */
   #OnModelEvent = () => {
     this.init();
   };
 
+  /**
+   * Действия при изменении фильтра
+   */
   #OnFilterChange = (filterType) => {
     if (this.#filterModel.filter === filterType) {
       return;

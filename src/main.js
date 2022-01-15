@@ -1,40 +1,32 @@
 import { renderElement, RenderPosition, removeComponent } from './utils/render.js';
-import { generatePoint } from './mock/point.js';
 import { TripTabsView } from './view/trip-tabs-view.js';
 import { TripPresenter } from './presenter/trip-presenter.js';
 import { FilterPresenter } from './presenter/filter-presenter.js';
 import { PointsModel } from './model/points-model.js';
+import { OffersModel } from './model/offers-model.js';
+import { DestinationsModel } from './model/destinations-model.js';
 import { FilterModel } from './model/filter-model.js';
 import { StatsView } from './view/stats-view.js';
 import { MenuItem } from './const.js';
+import { ApiService } from './api-service.js';
 
+const AUTHORIZATION = 'Basic dwadawdwadnbgcmjghfljhk';
+const END_POINT = 'https://16.ecmascript.pages.academy/big-trip';
 
-const POINT_COUNT = 15;
 const menuContainer = document.querySelector('.trip-controls__navigation');
 const filterContainer = document.querySelector('.trip-controls__filters');
 const tripContainer = document.querySelector('.page-body__page-main').querySelector('.page-body__container');
 
 const filterModel = new FilterModel();
-
-const points = [];
-for (let i = 0; i < POINT_COUNT; i++) {
-  points[i] = generatePoint();
-}
-
-const pointsModel = new PointsModel();
-pointsModel.points = points;
-
+const pointsModel = new PointsModel(new ApiService(END_POINT, AUTHORIZATION));
+const offersModel = new OffersModel(new ApiService(END_POINT, AUTHORIZATION));
+const destinationsModel = new DestinationsModel(new ApiService(END_POINT, AUTHORIZATION));
 const filterPresenter = new FilterPresenter(filterContainer, filterModel, pointsModel);
-filterPresenter.init();
-
-const tripPresenter = new TripPresenter(tripContainer, pointsModel, filterModel);
-tripPresenter.init();
+const tripPresenter = new TripPresenter(tripContainer, pointsModel, filterModel, offersModel, destinationsModel);
 
 const siteMenuComponent = new TripTabsView();
-renderElement(menuContainer, siteMenuComponent, RenderPosition.BEFOREEND);
 
 let statisticsComponent = null;
-
 const onSiteMenuClick = (menuItem) => {
   switch (menuItem) {
     case MenuItem.TABLE:
@@ -58,12 +50,15 @@ const onSiteMenuClick = (menuItem) => {
       break;
   }
 };
-siteMenuComponent.setOnMenuClick(onSiteMenuClick);
-
 
 document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
   evt.preventDefault();
   tripPresenter.createTask();
 });
 
-
+filterPresenter.init();
+tripPresenter.init();
+pointsModel.init().finally(() => {
+  renderElement(menuContainer, siteMenuComponent, RenderPosition.BEFOREEND);
+  siteMenuComponent.setOnMenuClick(onSiteMenuClick);
+});

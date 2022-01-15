@@ -6,10 +6,6 @@ import AbstractView from './abstract-view.js';
 const createTripTemplate = () =>
   `<section class="trip-events">
     <h2 class="visually-hidden">Trip events</h2>
-
-    <!-- Сортировка -->
-
-    <!-- Контент -->
   </section>`;
 
 /**
