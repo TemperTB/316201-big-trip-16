@@ -1,8 +1,8 @@
-import dayjs from 'dayjs';
-
 const Method = {
   GET: 'GET',
   PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
 };
 
 class ApiService {
@@ -33,13 +33,37 @@ class ApiService {
     const response = await this.#load({
       url: `points/${point.id}`,
       method: Method.PUT,
-      body: this.#adaptToServer(point),
+      body: JSON.stringify(this.#adaptToServer(point)),
+      headers: new Headers({ 'Content-Type': 'application/json' }),
+    });
+    const parsedResponse = await ApiService.parseResponse(response);
+
+    return parsedResponse;
+  };
+
+  /**
+   * Добавление данных на сервер
+   */
+  addPoint = async (point) => {
+    const response = await this.#load({
+      url: 'points',
+      method: Method.POST,
+      body: JSON.stringify(this.#adaptToServer(point)),
       headers: new Headers({ 'Content-Type': 'application/json' }),
     });
 
     const parsedResponse = await ApiService.parseResponse(response);
 
     return parsedResponse;
+  };
+
+  deletePoint = async (point) => {
+    const response = await this.#load({
+      url: `points/${point.id}`,
+      method: Method.DELETE,
+    });
+
+    return response;
   };
 
   /**
@@ -49,7 +73,6 @@ class ApiService {
     headers.append('Authorization', this.#authorization);
 
     const response = await fetch(`${this.#endPoint}/${url}`, { method, body, headers });
-
     try {
       ApiService.checkStatus(response);
       return response;
@@ -62,12 +85,13 @@ class ApiService {
    * Переход с данных фронта на бэкенд
    */
   #adaptToServer = (point) => {
+
     const adaptedPoint = {
       ...point,
       // eslint-disable-next-line camelcase
-      date_from: point.dateBegin instanceof dayjs ? point.dateBegin.toISOString() : null,
+      date_from: point.dateBegin !== null ? point.dateBegin.toISOString() : null,
       // eslint-disable-next-line camelcase
-      date_to: point.dateEnd instanceof dayjs ? point.dateEnd.toISOString() : null,
+      date_to: point.dateEnd !== null ? point.dateEnd.toISOString() : null,
       // eslint-disable-next-line camelcase
       is_favorite: point.isFavorite,
       // eslint-disable-next-line camelcase

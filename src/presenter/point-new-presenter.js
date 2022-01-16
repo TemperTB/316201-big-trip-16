@@ -1,5 +1,4 @@
 import { PointEditView } from '../view/point-edit-view.js';
-import { nanoid } from 'nanoid';
 import { getDate } from '../utils/date.js';
 import { removeComponent, renderElement, RenderPosition } from '../utils/render.js';
 import { UserAction, UpdateType } from '../const.js';
@@ -41,12 +40,10 @@ class PointNewPresenter {
     }
 
     this.#pointEditComponent = new PointEditView(NEW_POINT, this.#offers, this.#destinations);
-    this.#pointEditComponent.setOnClickSave(this.#onClickSave);
+    this.#pointEditComponent.setOnSaveClick(this.#onSaveClick);
     this.#pointEditComponent.setOnFormSubmit();
     this.#pointEditComponent.setOnDeleteClick(this.#onDeleteClick);
-    this.#pointEditComponent.element
-      .querySelector('.event__rollup-btn')
-      .addEventListener('click', this.#onCloseEditClick);
+    this.#pointEditComponent.setOnCloseEditClick(this.#onCloseEditClick);
 
     renderElement(this.#pointListContainer, this.#pointEditComponent, RenderPosition.AFTERBEGIN);
 
@@ -67,15 +64,49 @@ class PointNewPresenter {
     this.#pointEditComponent = null;
   };
 
-  #onClickSave = (point) => {
-    this.#changeData(UserAction.ADD_POINT, UpdateType.MINOR, { id: nanoid(), ...point });
+  /**
+   * Переход на состояние сохранения
+   */
+  setSaving = () => {
+    this.#pointEditComponent.updateData({
+      isDisabled: true,
+      isSaving: true,
+    });
+  };
+
+  /**
+   * Отмена состояния
+   */
+  setAborting = () => {
+    const resetFormState = () => {
+      this.#pointEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#pointEditComponent.shake(resetFormState);
+  };
+
+  /**
+   * Действие при клике на кнопку Save
+   */
+  #onSaveClick = (point) => {
+    this.#changeData(UserAction.ADD_POINT, UpdateType.MINOR, point);
     this.destroy();
   };
 
+  /**
+   * Действие при клике на кнопку Delete
+   */
   #onDeleteClick = () => {
     this.destroy();
   };
 
+  /**
+   * Действие при нажатии Esc
+   */
   #onEscKeyDown = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();

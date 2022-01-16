@@ -20,6 +20,7 @@ const transformDate = (date, format) => dayjs(date).format(format);
  */
 const getDate = (date) => dayjs(date);
 
+
 /**
  * Форматирование продолжительности
  * @example 01D 02H 30M

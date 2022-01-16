@@ -29,6 +29,9 @@ class PointsModel extends AbstractObservable {
     this._notify(UpdateType.INIT);
   };
 
+  /**
+   * Изменение точки
+   */
   updatePoint = async (updateType, update) => {
     const index = this.#points.findIndex((point) => point.id === update.id);
 
@@ -45,33 +48,40 @@ class PointsModel extends AbstractObservable {
       throw new Error('Can\'t update task');
     }
 
-    // this.#points = [...this.#points.slice(0, index), update, ...this.#points.slice(index + 1)];
-
-    // this._notify(updateType, update);
   };
 
   /**
    * Добавление точки
    */
-  addPoint = (updateType, update) => {
-    this.#points = [update, ...this.#points];
-
-    this._notify(updateType, update);
+  addPoint = async (updateType, update) => {
+    try {
+      const response = await this.#apiService.addPoint(update);
+      const newPoint = this.#adaptToClient(response);
+      this.#points = [newPoint, ...this.#points];
+      this._notify(updateType, newPoint);
+    } catch (err) {
+      throw new Error('Can\'t add task');
+    }
   };
 
   /**
    * Удаление точки
    */
-  deletePoint = (updateType, update) => {
+  deletePoint = async (updateType, update) => {
     const index = this.#points.findIndex((point) => point.id === update.id);
 
     if (index === -1) {
       throw new Error('Can\'t delete unexisting task');
     }
 
-    this.#points = [...this.#points.slice(0, index), ...this.#points.slice(index + 1)];
+    try {
 
-    this._notify(updateType);
+      await this.#apiService.deletePoint(update);
+      this.#points = [...this.#points.slice(0, index), ...this.#points.slice(index + 1)];
+      this._notify(updateType);
+    } catch (err) {
+      throw new Error('Can\'t delete task');
+    }
   };
 
   /**
@@ -80,7 +90,7 @@ class PointsModel extends AbstractObservable {
   #adaptToClient = (point) => {
     const adaptedPoint = {
       ...point,
-      dateBegin: point['date_from'] !== null ? getDate(point['date_from']) : point['date_from'], // На клиенте дата хранится как экземпляр Date
+      dateBegin: point['date_from'] !== null ? getDate(point['date_from']) : point['date_from'],
       dateEnd: point['date_to'] !== null ? getDate(point['date_to']) : point['date_to'],
       isFavorite: point['is_favorite'],
       price: point['base_price'],
