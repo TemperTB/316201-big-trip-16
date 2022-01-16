@@ -98,12 +98,14 @@ const createDestinationSection = (destination) => {
 /**
  * Создает список для выбора типа поездки
  */
-const createEvenTypeItems = () => {
+const createEvenTypeItems = (isDisabled) => {
   let template = '';
   for (const eventType of EVENT_TYPES) {
     template += `
       <div class="event__type-item">
-        <input id="event-type-${eventType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${eventType}">
+        <input id="event-type-${eventType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${eventType}" ${
+  isDisabled ? 'disabled' : ''
+}>
         <label class="event__type-label  event__type-label--${eventType}" for="event-type-${eventType}-1">${doFirstLetterUpperCase(
   eventType,
 )}</label>
@@ -134,6 +136,9 @@ const createPointEditTemplate = (_data, _offers, _destinations) => {
     destinationForElement,
     dateBeginForElement,
     dateEndForElement,
+    isDisabled,
+    isSaving,
+    isDeleting,
   } = _data;
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -143,12 +148,14 @@ const createPointEditTemplate = (_data, _offers, _destinations) => {
             <span class="visually-hidden">Choose event type</span>
             <img class="event__type-icon" width="17" height="17" src="img/icons/${typeForElement}.png" alt="Event type icon">
           </label>
-          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${
+  isDisabled ? 'disabled' : ''
+}>
 
           <div class="event__type-list">
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Event type</legend>
-              ${createEvenTypeItems()}
+              ${createEvenTypeItems(isDisabled)}
             </fieldset>
           </div>
         </div>
@@ -159,7 +166,7 @@ const createPointEditTemplate = (_data, _offers, _destinations) => {
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(
     destinationForElement.name,
-  )}" list="destination-list-1">
+  )}" list="destination-list-1" ${isDisabled ? 'disabled' : ''}>
           <datalist id="destination-list-1">
             ${createDestinationDatalist(_destinations)}
           </datalist>
@@ -169,12 +176,12 @@ const createPointEditTemplate = (_data, _offers, _destinations) => {
           <label class="visually-hidden" for="event-start-time-1">From</label>
           <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${getDate(
     dateBeginForElement,
-  )}">
+  )}" ${isDisabled ? 'disabled' : ''}>
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">To</label>
           <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${getDate(
     dateEndForElement,
-  )}">
+  )}" ${isDisabled ? 'disabled' : ''}>
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -182,11 +189,17 @@ const createPointEditTemplate = (_data, _offers, _destinations) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${priceForElement}">
+          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${priceForElement}" ${
+  isDisabled ? 'disabled' : ''
+}>
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Delete</button>
+        <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>
+            ${isSaving ? 'Saving...' : 'Save'}
+          </button>
+          <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>
+            ${isDeleting ? 'Deleting...' : 'Delete'}
+          </button>
         <button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>
         </button>
@@ -237,7 +250,9 @@ class PointEditView extends SmartView {
     this.#setOnTypeChange();
     this.#setOnDestinationChange();
     this.setOnFormSubmit();
-    this.setOnClickSave(this._callback.clickSave);
+    this.setOnSaveClick(this._callback.saveClick);
+    this.setOnDeleteClick(this._callback.deleteClick);
+    this.setOnCloseEditClick(this._callback.closeEditClick);
     this.#setDatepicker();
     this.#setOnPrice();
   };
@@ -263,9 +278,9 @@ class PointEditView extends SmartView {
   /**
    * Обработчик при нажатии кнопки Save (отправка формы)
    */
-  setOnClickSave = (callback) => {
-    this._callback.clickSave = callback;
-    this.element.querySelector('.event__save-btn').addEventListener('click', this.#onClickSave);
+  setOnSaveClick = (callback) => {
+    this._callback.saveClick = callback;
+    this.element.querySelector('.event__save-btn').addEventListener('click', this.#onSaveClick);
   };
 
   /**
@@ -281,6 +296,14 @@ class PointEditView extends SmartView {
   setOnDeleteClick = (callback) => {
     this._callback.deleteClick = callback;
     this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onDeleteClick);
+  };
+
+  /**
+   * Обработчик при нажатии стрелки (закрытие формы)
+   */
+  setOnCloseEditClick = (callback) => {
+    this._callback.closeEditClick = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onCloseEditClick);
   };
 
   /**
@@ -309,7 +332,7 @@ class PointEditView extends SmartView {
    */
   #onDestinationNameChange = (evt) => {
     evt.preventDefault();
-    const newDestinationName =  evt.target.value;
+    const newDestinationName = evt.target.value;
     let newDestination = {
       name: newDestinationName,
       description: undefined,
@@ -320,11 +343,9 @@ class PointEditView extends SmartView {
         newDestination = destination;
       }
     }
-    this.updateData(
-      {
-        destinationForElement: newDestination,
-      },
-    );
+    this.updateData({
+      destinationForElement: newDestination,
+    });
   };
 
   /**
@@ -412,7 +433,7 @@ class PointEditView extends SmartView {
   /**
    * Действия при нажатии кнопки Save (отправка формы)
    */
-  #onClickSave = (evt) => {
+  #onSaveClick = (evt) => {
     evt.preventDefault();
     const checkedOffers = this.#checkOffers();
 
@@ -422,7 +443,7 @@ class PointEditView extends SmartView {
       },
       true,
     );
-    this._callback.clickSave(PointEditView.parseDataToPoint(this._data));
+    this._callback.saveClick(PointEditView.parseDataToPoint(this._data));
   };
 
   /**
@@ -441,6 +462,14 @@ class PointEditView extends SmartView {
   };
 
   /**
+   * Действия при нажатии на стрелку (отмена редактирования точки)
+   */
+  #onCloseEditClick = (evt) => {
+    evt.preventDefault();
+    this._callback.closeEditClick();
+  };
+
+  /**
    *
     Перевод из данных в состояние
    */
@@ -452,6 +481,9 @@ class PointEditView extends SmartView {
     dateEndForElement: point.dateEnd,
     priceForElement: point.price,
     offersForElement: point.offers,
+    isDisabled: false,
+    isSaving: false,
+    isDeleting: false,
   });
 
   /**
@@ -459,7 +491,6 @@ class PointEditView extends SmartView {
    */
   static parseDataToPoint = (data) => {
     const point = { ...data };
-
     point.type = point.typeForElement;
     point.destination = point.destinationForElement;
     point.dateBegin = point.dateBeginForElement;
@@ -473,6 +504,9 @@ class PointEditView extends SmartView {
     delete point.dateEndForElement;
     delete point.priceForElement;
     delete point.offersForElement;
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
 
     return point;
   };

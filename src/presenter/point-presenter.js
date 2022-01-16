@@ -12,6 +12,15 @@ const Mode = {
   EDITING: 'EDITING',
 };
 
+/**
+ * Состояние точки маршрута
+ */
+const State = {
+  SAVING: 'SAVING',
+  DELETING: 'DELETING',
+  ABORTING: 'ABORTING',
+};
+
 class PointPresenter {
   #pointListContainer = null;
   #changeData = null;
@@ -46,10 +55,11 @@ class PointPresenter {
     this.#pointEditComponent = new PointEditView(point, this.#offers, this.#destinations);
 
     this.#pointComponent.setOnEditClick(this.#onEditClick);
-    this.#pointEditComponent.setOnClickSave(this.#onClickSave);
-    this.#pointEditComponent.setOnFormSubmit();
     this.#pointComponent.setOnFavoriteClick(this.#onFavoriteClick);
+    this.#pointEditComponent.setOnSaveClick(this.#onSaveClick);
+    this.#pointEditComponent.setOnFormSubmit();
     this.#pointEditComponent.setOnDeleteClick(this.#onDeleteClick);
+    this.#pointEditComponent.setOnCloseEditClick(this.#onCloseEditClick);
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
       renderElement(this.#pointListContainer, this.#pointComponent, RenderPosition.BEFOREEND);
@@ -61,7 +71,8 @@ class PointPresenter {
     }
 
     if (this.#mode === Mode.EDITING) {
-      replaceElements(this.#pointEditComponent, prevPointEditComponent);
+      replaceElements(this.#pointComponent, prevPointEditComponent);
+      this.#mode = Mode.DEFAULT;
     }
 
     if (this.#pointListContainer.element.contains(prevPointComponent.element)) {
@@ -95,14 +106,47 @@ class PointPresenter {
   };
 
   /**
+   * Установка статуса точки маршрута
+   */
+  setViewState = (state) => {
+    if (this.#mode === Mode.DEFAULT) {
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#pointEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    switch (state) {
+      case State.SAVING:
+        this.#pointEditComponent.updateData({
+          isDisabled: true,
+          isSaving: true,
+        });
+        break;
+      case State.DELETING:
+        this.#pointEditComponent.updateData({
+          isDisabled: true,
+          isDeleting: true,
+        });
+        break;
+      case State.ABORTING:
+        this.#pointComponent.shake(resetFormState);
+        this.#pointEditComponent.shake(resetFormState);
+        break;
+    }
+  };
+
+  /**
    * Открытие формы редактирования
    */
   #replaceCardToForm = () => {
     replaceElements(this.#pointEditComponent, this.#pointComponent);
     document.addEventListener('keydown', this.#onEscKeyDown);
-    this.#pointEditComponent.element
-      .querySelector('.event__rollup-btn')
-      .addEventListener('click', this.#onCloseEditClick);
     this.#changeMode();
     this.#mode = Mode.EDITING;
   };
@@ -113,9 +157,6 @@ class PointPresenter {
   #replaceFormToCard = () => {
     replaceElements(this.#pointComponent, this.#pointEditComponent);
     document.removeEventListener('keydown', this.#onEscKeyDown);
-    this.#pointEditComponent.element
-      .querySelector('.event__rollup-btn')
-      .removeEventListener('click', this.#onCloseEditClick);
     this.#mode = Mode.DEFAULT;
   };
 
@@ -149,13 +190,16 @@ class PointPresenter {
    *
    * Действия при сохранении формы редактирования
    */
-  #onClickSave = (point) => {
-    let  isMinorUpdate = false;
-    if (isDifferentValue(this.#point.dateBegin, point.dateBegin) || isDifferentValue(this.#point.price, point.price) || this.#point.offers !== point.offers) {
+  #onSaveClick = (point) => {
+    let isMinorUpdate = false;
+    if (
+      isDifferentValue(this.#point.dateBegin, point.dateBegin) ||
+      isDifferentValue(this.#point.price, point.price) ||
+      this.#point.offers !== point.offers
+    ) {
       isMinorUpdate = true;
     }
     this.#changeData(UserAction.UPDATE_POINT, isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH, point);
-    this.#replaceFormToCard();
   };
 
   /**
@@ -176,4 +220,4 @@ class PointPresenter {
   };
 }
 
-export { PointPresenter };
+export { PointPresenter, State };
