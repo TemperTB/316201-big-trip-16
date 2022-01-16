@@ -1,6 +1,7 @@
 import { TripFiltersView } from '../view/trip-filters-view.js';
 import { renderElement, RenderPosition, replaceElements, removeComponent } from '../utils/render.js';
 import { FilterType, UpdateType } from '../const.js';
+import { filter } from '../utils/filter.js';
 
 /**
  * Презентер для фильтрации
@@ -19,18 +20,22 @@ class FilterPresenter {
   }
 
   get filters() {
+    const points = this.#pointsModel.points;
     return [
       {
         type: FilterType.EVERYTHING,
         name: 'Everything',
+        count: filter[FilterType.EVERYTHING](points).length,
       },
       {
         type: FilterType.PAST,
         name: 'Past',
+        count: filter[FilterType.PAST](points).length,
       },
       {
         type: FilterType.FUTURE,
         name: 'Future',
+        count: filter[FilterType.FUTURE](points).length,
       },
     ];
   }
