@@ -51,14 +51,14 @@ const onSiteMenuClick = (menuItem) => {
   }
 };
 
-document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
-  evt.preventDefault();
-  tripPresenter.createTask();
-});
-
 filterPresenter.init();
 tripPresenter.init();
 pointsModel.init().finally(() => {
   renderElement(menuContainer, siteMenuComponent, RenderPosition.BEFOREEND);
   siteMenuComponent.setOnMenuClick(onSiteMenuClick);
+});
+
+document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
+  evt.preventDefault();
+  tripPresenter.createTask();
 });
