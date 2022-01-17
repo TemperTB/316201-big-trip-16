@@ -1,9 +1,8 @@
 import dayjs from 'dayjs';
 import { addZero } from './common.js';
+import duration from '../../node_modules/dayjs/plugin/duration.js';
 
-// eslint-disable-next-line no-undef
-const Duration = require('dayjs/plugin/duration');
-dayjs.extend(Duration);
+dayjs.extend(duration);
 
 
 /**
