@@ -12,10 +12,10 @@ const NEW_POINT = {
   type: undefined,
   destination: {
     description: '',
-    name: '"Input destination city"',
+    name: '',
     pictures: [],
   },
-  price: 0,
+  price: undefined,
   offers: [],
   isFavorite: false,
 };
@@ -44,7 +44,6 @@ class PointNewPresenter {
     this.#pointEditComponent.setOnFormSubmit();
     this.#pointEditComponent.setOnDeleteClick(this.#onDeleteClick);
     this.#pointEditComponent.setOnCloseEditClick(this.#onCloseEditClick);
-
     renderElement(this.#pointListContainer, this.#pointEditComponent, RenderPosition.AFTERBEGIN);
 
     document.addEventListener('keydown', this.#onEscKeyDown);
@@ -94,7 +93,6 @@ class PointNewPresenter {
    */
   #onSaveClick = (point) => {
     this.#changeData(UserAction.ADD_POINT, UpdateType.MINOR, point);
-    this.destroy();
   };
 
   /**

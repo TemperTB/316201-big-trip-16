@@ -294,13 +294,13 @@ class PointEditView extends SmartView {
   #setDatepicker = () => {
     const datepickers = this.element.querySelectorAll('.event__input--time');
     this.#dateBeginPicker = flatpickr(datepickers[0], {
-      dateFormat: 'd/m/Y H:i',
+      dateFormat: 'd/m/y H:i',
       enableTime: true,
       onChange: this.#onDateBeginChange,
     });
 
     this.#dateEndPicker = flatpickr(datepickers[1], {
-      dateFormat: 'd/m/Y H:i',
+      dateFormat: 'd/m/y H:i',
       enableTime: true,
       onChange: this.#onDateEndChange,
     });
