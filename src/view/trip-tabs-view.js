@@ -1,4 +1,4 @@
-import AbstractView from './abstract-view.js';
+import { AbstractView } from './abstract-view.js';
 import { MenuItem } from '../const.js';
 
 /**
@@ -27,14 +27,6 @@ class TripTabsView extends AbstractView {
   };
 
   /**
-   * Действие при клике на меню
-   */
-  #onMenuClick = (evt) => {
-    evt.preventDefault();
-    this._callback.menuClick(evt.target.textContent);
-  };
-
-  /**
    * Переключение активного меню (визуализация)
    */
   setMenuItem = (menuItem) => {
@@ -59,6 +51,15 @@ class TripTabsView extends AbstractView {
     }
     return false;
   };
+
+  /**
+   * Действие при клике на меню
+   */
+  #onMenuClick = (evt) => {
+    evt.preventDefault();
+    this._callback.menuClick(evt.target.textContent);
+  };
+
 }
 
 export { TripTabsView };

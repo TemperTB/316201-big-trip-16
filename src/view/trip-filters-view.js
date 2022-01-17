@@ -1,4 +1,4 @@
-import AbstractView from './abstract-view.js';
+import { AbstractView } from './abstract-view.js';
 
 /**
  * Разметка input radio для одного фильтра
@@ -28,7 +28,7 @@ const createTripFiltersTemplate = (filters, currentFilterType) => {
  * Фильтры
  */
 class TripFiltersView extends AbstractView {
-  #filters = null
+  #filters = null;
   #currentFilter = null;
 
   constructor(filters, currentFilterType) {

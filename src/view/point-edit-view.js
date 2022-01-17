@@ -258,24 +258,6 @@ class PointEditView extends SmartView {
   };
 
   /**
-   * Отрисовка flatpicker при клике на даты
-   */
-  #setDatepicker = () => {
-    const datepickers = this.element.querySelectorAll('.event__input--time');
-    this.#dateBeginPicker = flatpickr(datepickers[0], {
-      dateFormat: 'd/m/Y H:i',
-      enableTime: true,
-      onChange: this.#onDateBeginChange,
-    });
-
-    this.#dateEndPicker = flatpickr(datepickers[1], {
-      dateFormat: 'd/m/Y H:i',
-      enableTime: true,
-      onChange: this.#onDateEndChange,
-    });
-  };
-
-  /**
    * Обработчик при нажатии кнопки Save (отправка формы)
    */
   setOnSaveClick = (callback) => {
@@ -304,6 +286,24 @@ class PointEditView extends SmartView {
   setOnCloseEditClick = (callback) => {
     this._callback.closeEditClick = callback;
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onCloseEditClick);
+  };
+
+  /**
+   * Отрисовка flatpicker при клике на даты
+   */
+  #setDatepicker = () => {
+    const datepickers = this.element.querySelectorAll('.event__input--time');
+    this.#dateBeginPicker = flatpickr(datepickers[0], {
+      dateFormat: 'd/m/Y H:i',
+      enableTime: true,
+      onChange: this.#onDateBeginChange,
+    });
+
+    this.#dateEndPicker = flatpickr(datepickers[1], {
+      dateFormat: 'd/m/Y H:i',
+      enableTime: true,
+      onChange: this.#onDateEndChange,
+    });
   };
 
   /**

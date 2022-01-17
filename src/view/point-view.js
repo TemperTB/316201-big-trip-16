@@ -1,5 +1,5 @@
 import he from 'he';
-import AbstractView from './abstract-view.js';
+import { AbstractView } from './abstract-view.js';
 import { transformDate, calcDiffBetweenDates, calcDuration } from '../utils/date.js';
 
 /**

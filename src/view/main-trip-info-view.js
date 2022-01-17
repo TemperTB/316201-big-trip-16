@@ -1,4 +1,4 @@
-import AbstractView from './abstract-view.js';
+import { AbstractView } from './abstract-view.js';
 import { transformDate } from '../utils/date.js';
 
 const PRICE = 'price';

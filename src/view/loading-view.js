@@ -1,4 +1,4 @@
-import AbstractView from './abstract-view.js';
+import { AbstractView } from './abstract-view.js';
 
 /**
  * Разметка для информации о загрузке данных с сервера

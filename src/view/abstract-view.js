@@ -5,7 +5,7 @@ const SHAKE_ANIMATION_TIMEOUT = 600;
 /**
  * Абстрактный класс для создания остальных классов views
  */
-export default class AbstractView {
+class AbstractView {
   #element = null;
   _callback = {};
 
@@ -40,4 +40,6 @@ export default class AbstractView {
   }
 
 }
+
+export {AbstractView};
 

@@ -24,7 +24,6 @@ const addZero = (number) => {
 /**
  * Возвращает исходную строку с заглавной буквы
  * @param {String} str
- * @returns
  */
 const doFirstLetterUpperCase = (str) => str[0].toUpperCase() + str.slice(1);
 
