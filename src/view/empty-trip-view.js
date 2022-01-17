@@ -1,4 +1,4 @@
-import AbstractView from './abstract-view.js';
+import { AbstractView } from './abstract-view.js';
 import { FilterType } from '../const.js';
 
 const NoPointsTextType = {
@@ -19,7 +19,6 @@ const createEmptyTripTemplate = (filterType) => {
  * Список точек маршрута
  */
 class EmptyTripView extends AbstractView {
-
   constructor(data) {
     super();
     this._data = data;

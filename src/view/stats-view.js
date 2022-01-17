@@ -2,7 +2,6 @@ import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { calcDuration } from '../utils/date.js';
 import { calcMoneyValuesForChart, calcTypeValuesForChart, calcTimeValuesForChart } from '../utils/stats.js';
-
 import { SmartView } from './smart-view.js';
 
 const BAR_HEIGHT = 55;
@@ -31,7 +30,7 @@ const renderMoneyChart = (moneyCtx, points) => {
           hoverBackgroundColor: '#ffffff',
           anchor: 'start',
           barThickness: 44,
-          minBarLength: 50,
+          minBarLength: 100,
         },
       ],
     },

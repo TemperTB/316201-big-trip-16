@@ -1,7 +1,6 @@
-import AbstractView from './abstract-view.js';
+import { AbstractView } from './abstract-view.js';
 
 class SmartView extends AbstractView {
-
   _data = {};
 
   /**
@@ -10,7 +9,6 @@ class SmartView extends AbstractView {
    * @param {boolean} justDataUpdating - надо ли перерисовывать компонент
    */
   updateData = (update, justDataUpdating) => {
-
     this._data = { ...this._data, ...update };
 
     if (justDataUpdating) {
