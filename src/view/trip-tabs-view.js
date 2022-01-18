@@ -44,13 +44,7 @@ class TripTabsView extends AbstractView {
   /**
    * Переключение активного меню (визуализация)
    */
-  isActive = (menuItem) => {
-    const item = this.element.querySelector('.trip-tabs__btn--active');
-    if (item.textContent === menuItem) {
-      return true;
-    }
-    return false;
-  };
+  isActive = (menuItem) => this.element.querySelector('.trip-tabs__btn--active').item.textContent === menuItem;
 
   /**
    * Действие при клике на меню

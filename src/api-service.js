@@ -29,42 +29,37 @@ class ApiService {
   /**
    * Обновление данных на сервере
    */
-  updatePoint = async (point) => {
-    const response = await this.#load({
-      url: `points/${point.id}`,
-      method: Method.PUT,
-      body: JSON.stringify(this.#adaptToServer(point)),
-      headers: new Headers({ 'Content-Type': 'application/json' }),
-    });
-    const parsedResponse = await ApiService.parseResponse(response);
-
-    return parsedResponse;
-  };
+  updatePoint = async (point) =>
+    await ApiService.parseResponse(
+      await this.#load({
+        url: `points/${point.id}`,
+        method: Method.PUT,
+        body: JSON.stringify(this.#adaptToServer(point)),
+        headers: new Headers({ 'Content-Type': 'application/json' }),
+      }),
+    );
 
   /**
    * Добавление данных на сервер
    */
-  addPoint = async (point) => {
-    const response = await this.#load({
-      url: 'points',
-      method: Method.POST,
-      body: JSON.stringify(this.#adaptToServer(point)),
-      headers: new Headers({ 'Content-Type': 'application/json' }),
-    });
+  addPoint = async (point) =>
+    await ApiService.parseResponse(
+      await this.#load({
+        url: 'points',
+        method: Method.POST,
+        body: JSON.stringify(this.#adaptToServer(point)),
+        headers: new Headers({ 'Content-Type': 'application/json' }),
+      }),
+    );
 
-    const parsedResponse = await ApiService.parseResponse(response);
-
-    return parsedResponse;
-  };
-
-  deletePoint = async (point) => {
-    const response = await this.#load({
+  /**
+   * Удаление данных с сервера
+   */
+  deletePoint = async (point) =>
+    await this.#load({
       url: `points/${point.id}`,
       method: Method.DELETE,
     });
-
-    return response;
-  };
 
   /**
    * Загрузка данных с сервера
@@ -85,7 +80,6 @@ class ApiService {
    * Переход с данных фронта на бэкенд
    */
   #adaptToServer = (point) => {
-
     const adaptedPoint = {
       ...point,
       // eslint-disable-next-line camelcase
